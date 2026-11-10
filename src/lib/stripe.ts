@@ -23,6 +23,8 @@ export async function createCheckoutSession(order: OrderRow): Promise<{ id: stri
         price_data: {
           currency: 'eur',
           unit_amount: order.amount_due,
+          // Prices are shown incl. VAT; Stripe Tax splits the VAT out for the invoice.
+          ...(config.stripeTax ? { tax_behavior: 'inclusive' as const } : {}),
           product_data:
             order.kind === 'voucher'
               ? { name: 'Gutschein für einen Wandplaner', description: 'plana studio, einlösbar auf plana-planer.de' }
@@ -33,7 +35,8 @@ export async function createCheckoutSession(order: OrderRow): Promise<{ id: stri
     success_url: `${config.siteUrl}/bestellung/${order.id}?t=${order.token}&session_id={CHECKOUT_SESSION_ID}`,
     cancel_url: `${config.siteUrl}/${order.kind === 'voucher' ? 'gutschein' : 'kasse'}?abgebrochen=1`,
     expires_at: Math.floor(Date.now() / 1000) + 60 * 60,
-  });
+    ...(config.stripeTax ? { automatic_tax: { enabled: true } } : {}),
+  }, { idempotencyKey: `checkout-${order.id}` });
   if (!session.url) throw new Error('Stripe returned no checkout URL');
   return { id: session.id, url: session.url };
 }

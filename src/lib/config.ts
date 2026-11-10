@@ -11,6 +11,8 @@ export const config = {
   dataDir: path.resolve(/*turbopackIgnore: true*/ env('DATA_DIR', './var')),
   stripeSecretKey: env('STRIPE_SECRET_KEY'),
   stripeWebhookSecret: env('STRIPE_WEBHOOK_SECRET'),
+  /** Stripe Tax: calculates VAT per order. Turn on only after registering in the Stripe dashboard. */
+  stripeTax: env('STRIPE_TAX', 'false') === 'true',
   adminPassword: env('ADMIN_PASSWORD'),
   smtpUrl: env('SMTP_URL'),
   mailFrom: env('MAIL_FROM', 'plana studio <hallo@plana-planer.de>'),
