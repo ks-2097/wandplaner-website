@@ -1,2 +1,9 @@
-plana-website.zip
+node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo
+.env
+.env.local
+/var/
+*.zip
 preview-*.png
