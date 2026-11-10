@@ -36,12 +36,59 @@ const ALL = STATE_CODES;
 const only = (...s: StateCode[]) => s;
 
 /**
- * Public holidays by rule, per Bundesland. Regional holidays that apply to only part of a
- * state (Fronleichnam in parts of SN/TH, Friedensfest in Augsburg) are left out.
- * Mariä Himmelfahrt is included for Bayern, where it applies in most municipalities.
+ * Holidays that apply in only part of a Bundesland. The customer says whether theirs is
+ * one of the places where the day is a holiday.
+ */
+export const REGIONAL_HOLIDAYS: {
+  id: string;
+  states: readonly StateCode[];
+  name: string;
+  label: string;
+  /** Shown next to the checkbox: where the day is a holiday */
+  hint: string;
+  /** Ticked by default because it applies in most of the state */
+  defaultOn: boolean;
+  day: (year: number, easter: number) => number;
+}[] = [
+  {
+    id: 'mariae-himmelfahrt',
+    states: ['BY'],
+    name: 'Mariä Himmelfahrt',
+    label: 'MARIÄ HIMMELFAHRT',
+    hint: 'Feiertag in Gemeinden mit überwiegend katholischer Bevölkerung: im größten Teil Bayerns, auch in München, aber zum Beispiel nicht in Nürnberg oder Fürth.',
+    defaultOn: true,
+    day: (year) => toDayNumber(year, 8, 15),
+  },
+  {
+    id: 'friedensfest',
+    states: ['BY'],
+    name: 'Augsburger Friedensfest',
+    label: 'FRIEDENSFEST',
+    hint: 'Feiertag nur in der Stadt Augsburg.',
+    defaultOn: false,
+    day: (year) => toDayNumber(year, 8, 8),
+  },
+  {
+    id: 'fronleichnam',
+    states: ['SN', 'TH'],
+    name: 'Fronleichnam',
+    label: 'FRONLEICHNAM',
+    hint: 'Feiertag nur in einzelnen katholisch geprägten Gemeinden, in Sachsen in Teilen des Landkreises Bautzen, in Thüringen vor allem im Eichsfeld.',
+    defaultOn: false,
+    day: (_year, easter) => easter + 60,
+  },
+];
+
+export const regionalHolidaysFor = (state: StateCode) => REGIONAL_HOLIDAYS.filter((h) => h.states.includes(state));
+/** The regional holidays that are on unless the customer says otherwise. */
+export const defaultRegional = (state: StateCode): string[] => regionalHolidaysFor(state).filter((h) => h.defaultOn).map((h) => h.id);
+
+/**
+ * Public holidays by rule, per Bundesland. Holidays that apply in only part of a state
+ * are opt-in through `regional` (ids from REGIONAL_HOLIDAYS); without it the defaults apply.
  * Checked in tests against the OpenHolidays snapshot in data/public-holidays-reference.json.
  */
-export function publicHolidays(year: number, state: StateCode): Map<number, DayMark> {
+export function publicHolidays(year: number, state: StateCode, regional: readonly string[] = defaultRegional(state)): Map<number, DayMark> {
   const out = new Map<number, DayMark>();
   const add = (day: number, name: string, label: string, states: readonly StateCode[], dayOff = true) => {
     if (states.includes(state)) out.set(day, { name, label, dayOff });
@@ -60,7 +107,7 @@ export function publicHolidays(year: number, state: StateCode): Map<number, DayM
   add(easter + 49, 'Pfingstsonntag', 'PFINGSTSONNTAG', ALL, state === 'BB');
   add(easter + 50, 'Pfingstmontag', 'PFINGSTMONTAG', ALL);
   add(easter + 60, 'Fronleichnam', 'FRONLEICHNAM', only('BW', 'BY', 'HE', 'NW', 'RP', 'SL'));
-  add(fixed(8, 15), 'Mariä Himmelfahrt', 'MARIÄ HIMMELFAHRT', only('BY', 'SL'));
+  add(fixed(8, 15), 'Mariä Himmelfahrt', 'MARIÄ HIMMELFAHRT', only('SL'));
   add(fixed(9, 20), 'Weltkindertag', 'WELTKINDERTAG', only('TH'));
   add(fixed(10, 3), 'Tag der Deutschen Einheit', 'TAG DER EINHEIT', ALL);
   add(fixed(10, 31), 'Reformationstag', 'REFORMATIONSTAG', only('BB', 'HB', 'HH', 'MV', 'NI', 'SN', 'ST', 'SH', 'TH'));
@@ -72,6 +119,7 @@ export function publicHolidays(year: number, state: StateCode): Map<number, DayM
   add(fixed(12, 25), '1. Weihnachtsfeiertag', '1. WEIHNACHTEN', ALL);
   add(fixed(12, 26), '2. Weihnachtsfeiertag', '2. WEIHNACHTEN', ALL);
   add(fixed(12, 31), 'Silvester', 'SILVESTER', ALL, false);
+  for (const h of regionalHolidaysFor(state)) if (regional.includes(h.id)) out.set(h.day(year, easter), { name: h.name, label: h.label, dayOff: true });
   return out;
 }
 

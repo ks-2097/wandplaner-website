@@ -123,7 +123,7 @@ export function buildScene(spec: PlannerSpec): Scene {
   // ---- Day data
   const marks = new Map<number, DayMark>();
   if (spec.calendars.publicHolidays)
-    for (let y = fromDayNumber(from).y; y <= fromDayNumber(to).y; y++) for (const [day, m] of publicHolidays(y, spec.state)) marks.set(day, m);
+    for (let y = fromDayNumber(from).y; y <= fromDayNumber(to).y; y++) for (const [day, m] of publicHolidays(y, spec.state, spec.calendars.regional)) marks.set(day, m);
   const days: Day[] = Array.from({ length: to - from + 1 }, (_, i) => {
     const n = from + i;
     const wd = weekday(n);

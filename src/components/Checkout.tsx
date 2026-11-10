@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
-import { LAYOUTS, MONTHS_DE, STATES, buildScene, fromDayNumber, plannerRange, renderSvg, type PlannerSpec } from '@/planner';
+import { LAYOUTS, MONTHS_DE, REGIONAL_HOLIDAYS, STATES, buildScene, fromDayNumber, plannerRange, renderSvg, type PlannerSpec } from '@/planner';
 import { loadDraft } from './draft';
 import { Waitlist } from './Waitlist';
 
@@ -98,7 +98,7 @@ export function Checkout({ shopOpen, price, lastOrderDate }: { shopOpen: boolean
             <dt>Layout</dt><dd>{layout.name}</dd>
             <dt>Titel</dt><dd>{spec.design.title.text}</dd>
             <dt>Zeitraum</dt><dd>{a.d}. {MONTHS_DE[a.m - 1]} {a.y} bis {b.d}. {MONTHS_DE[b.m - 1]} {b.y}</dd>
-            <dt>Feiertage</dt><dd>{spec.calendars.publicHolidays ? STATES[spec.state] : 'keine'}</dd>
+            <dt>Feiertage</dt><dd>{spec.calendars.publicHolidays ? [STATES[spec.state], ...REGIONAL_HOLIDAYS.filter((h) => spec.calendars.regional?.includes(h.id)).map((h) => `mit ${h.name}`)].join(', ') : 'keine'}</dd>
             <dt>Schulferien</dt><dd>{spec.calendars.school.map((s) => STATES[s]).join(', ') || 'keine'}</dd>
             <dt>Weitere Einträge</dt><dd>{spec.events.length}</dd>
             <dt>Geburtstage</dt><dd>{spec.birthdays.length ? spec.birthdays.map((x) => `${x.name} (${x.day}.${x.month}.)`).join(', ') : 'keine'}</dd>

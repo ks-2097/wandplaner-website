@@ -37,6 +37,26 @@ describe('public holidays', () => {
       expect(ours.sort()).toEqual(expected);
     });
   }
+  it('lets the customer decide on holidays that apply in only part of a state', () => {
+    const aug15 = parseIso('2027-08-15');
+    expect(publicHolidays(2027, 'BY').get(aug15)?.name).toBe('Mariä Himmelfahrt'); // on by default
+    expect(publicHolidays(2027, 'BY', []).get(aug15)).toBeUndefined();
+    expect(publicHolidays(2027, 'SL', []).get(aug15)?.dayOff).toBe(true); // statewide in Saarland
+    expect(publicHolidays(2027, 'BY', ['friedensfest']).get(parseIso('2027-08-08'))?.name).toBe('Augsburger Friedensfest');
+    expect(publicHolidays(2027, 'SN').get(parseIso('2027-05-27'))).toBeUndefined();
+    expect(publicHolidays(2027, 'TH', ['fronleichnam']).get(parseIso('2027-05-27'))?.dayOff).toBe(true);
+    // An option of another state is ignored, and the planner follows the choice.
+    const spec = defaultSpec({ state: 'BY', layout: 'zeilen' });
+    expect(spec.calendars.regional).toEqual(['mariae-himmelfahrt']);
+    const labels = (s: typeof spec) => buildScene(sanitizeSpec(s)).prims.flatMap((p) => (p.k === 'text' ? [p.s] : []));
+    expect(labels(spec)).toContain('MARIÄ HIMMELFAHRT');
+    expect(labels({ ...spec, calendars: { ...spec.calendars, regional: ['fronleichnam'] } })).not.toContain('MARIÄ HIMMELFAHRT');
+    // A draft saved before the option existed keeps the default.
+    const old = structuredClone(spec);
+    delete old.calendars.regional;
+    expect(labels(old)).toContain('MARIÄ HIMMELFAHRT');
+  });
+
   it('computes movable feasts for three years', () => {
     const name = (y: number, s: StateCode, d: string) => publicHolidays(y, s).get(parseIso(d))?.name;
     expect(name(2026, 'BE', '2026-04-03')).toBe('Karfreitag');

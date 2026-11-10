@@ -3,8 +3,8 @@
 import Link from 'next/link';
 import { useDeferredValue, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import {
-  BODY_FONTS, EDITIONS, FONT_FAMILIES, LAYOUTS, MONTHS_DE, STATES, STATE_CODES, TITLE_FONTS, buildScene, defaultSpec, defaultTitle, fromDayNumber, iso,
-  plannerRange, renderSvg, type Birthday, type Design, type FontFamilyId, type LayoutId, type PlannerEvent, type PlannerSpec, type StateCode,
+  BODY_FONTS, EDITIONS, FONT_FAMILIES, LAYOUTS, MONTHS_DE, STATES, STATE_CODES, TITLE_FONTS, buildScene, defaultRegional, defaultSpec, defaultTitle, fromDayNumber, iso,
+  plannerRange, regionalHolidaysFor, renderSvg, type Birthday, type Design, type FontFamilyId, type LayoutId, type PlannerEvent, type PlannerSpec, type StateCode,
 } from '@/planner';
 import { loadDraft, saveDraft } from './draft';
 
@@ -165,6 +165,7 @@ export function Configurator({ assistant }: { assistant: boolean }) {
                   const next = e.target.value as StateCode;
                   s.calendars.school = s.calendars.school.map((x) => (x === s.state ? next : x)).filter((x, i, a) => a.indexOf(x) === i);
                   s.state = next;
+                  s.calendars.regional = defaultRegional(next);
                 })}>
                   {STATE_CODES.map((c) => <option key={c} value={c}>{STATES[c]}</option>)}
                 </select>
@@ -182,6 +183,18 @@ export function Configurator({ assistant }: { assistant: boolean }) {
               <input type="checkbox" checked={spec.calendars.publicHolidays} onChange={(e) => change((s) => { s.calendars.publicHolidays = e.target.checked; })} />
               <span>Feiertage in {STATES[spec.state]}</span>
             </label>
+            {regionalHolidaysFor(spec.state).map((h) => {
+              const on = (spec.calendars.regional ?? defaultRegional(spec.state)).includes(h.id);
+              return (
+                <label className="check" key={h.id}>
+                  <input type="checkbox" checked={on && spec.calendars.publicHolidays} disabled={!spec.calendars.publicHolidays} onChange={(e) => change((s) => {
+                    const rest = (s.calendars.regional ?? defaultRegional(s.state)).filter((id) => id !== h.id);
+                    s.calendars.regional = e.target.checked ? [...rest, h.id] : rest;
+                  })} />
+                  <span>{h.name} ist bei uns Feiertag<span className="small" style={{ display: 'block' }}>{h.hint}</span></span>
+                </label>
+              );
+            })}
             <label className="check">
               <input type="checkbox" checked={spec.calendars.school.includes(spec.state)} onChange={(e) => change((s) => {
                 s.calendars.school = e.target.checked ? [s.state, ...s.calendars.school.filter((x) => x !== s.state)].slice(0, 2) : s.calendars.school.filter((x) => x !== s.state);

@@ -1,7 +1,7 @@
 import { z } from 'zod';
 import { EDITIONS, editionById } from './editions';
 import { BODY_FONTS, FONT_IDS, type FontFamilyId } from './fonts';
-import { STATE_CODES } from './holidays';
+import { STATE_CODES, defaultRegional, regionalHolidaysFor } from './holidays';
 
 /**
  * The design spec: everything that distinguishes one planner from another.
@@ -77,6 +77,8 @@ export const specSchema = z.object({
     publicHolidays: z.boolean(),
     /** Bundesländer whose school holidays are shown; a second one helps commuters and patchwork families */
     school: z.array(z.enum(STATE_CODES as [string, ...string[]])).max(2),
+    /** Holidays that apply in only part of the state and that the customer has ticked (ids from REGIONAL_HOLIDAYS). Absent = the defaults. */
+    regional: z.array(z.string().max(40)).max(8).optional(),
   }),
   /** Entries from added calendars, resolved to fixed dates when they were added */
   events: z.array(eventSchema).max(600),
@@ -89,7 +91,7 @@ export type PlannerEvent = z.infer<typeof eventSchema>;
 type RawSpec = z.infer<typeof specSchema>;
 export type PlannerSpec = Omit<RawSpec, 'state' | 'calendars'> & {
   state: (typeof STATE_CODES)[number];
-  calendars: { publicHolidays: boolean; school: (typeof STATE_CODES)[number][] };
+  calendars: { publicHolidays: boolean; school: (typeof STATE_CODES)[number][]; regional?: string[] };
 };
 
 const NUMBER_WORDS: Record<number, string> = {
@@ -120,7 +122,7 @@ export function defaultSpec(overrides: Partial<Pick<PlannerSpec, 'edition' | 'st
   const edition = overrides.edition ?? EDITIONS[0].id;
   const start = overrides.start ?? { year: 2027, month: 1 };
   const state = overrides.state ?? 'BE';
-  return { v: 1, layout: overrides.layout ?? 'wochen', edition, state, start, design: designForEdition(edition, start), calendars: { publicHolidays: true, school: [state] }, events: [], birthdays: [] };
+  return { v: 1, layout: overrides.layout ?? 'wochen', edition, state, start, design: designForEdition(edition, start), calendars: { publicHolidays: true, school: [state], regional: defaultRegional(state) }, events: [], birthdays: [] };
 }
 
 // ---- Guardrails: whatever a person or the assistant asks for, the planner stays legible.
@@ -161,6 +163,8 @@ export function sanitizeSpec(input: unknown): PlannerSpec {
   // Hairlines thinner than this at low opacity vanish in print.
   if (spec.design.lines.grid < 0.15 && spec.design.lines.gridOpacity < 0.5) spec.design.lines.gridOpacity = 0.5;
   spec.calendars.school = [...new Set(spec.calendars.school)];
+  const allowed = regionalHolidaysFor(spec.state).map((h) => h.id);
+  spec.calendars.regional = (spec.calendars.regional ?? defaultRegional(spec.state)).filter((id, i, a) => allowed.includes(id) && a.indexOf(id) === i);
   spec.events = spec.events.filter((e) => !e.end || e.end >= e.start);
   spec.birthdays = spec.birthdays.filter((b) => b.day <= [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31][b.month - 1]);
   return spec;

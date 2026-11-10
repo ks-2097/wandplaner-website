@@ -1,5 +1,5 @@
 import { randomBytes, randomInt } from 'node:crypto';
-import { STATES, fromDayNumber, plannerRange, sanitizeSpec, LAYOUTS, MONTHS_DE, type PlannerSpec } from '@/planner';
+import { REGIONAL_HOLIDAYS, STATES, fromDayNumber, plannerRange, sanitizeSpec, LAYOUTS, MONTHS_DE, type PlannerSpec } from '@/planner';
 import { PRICES, PRODUCT, config, euro } from './config';
 import { getDb, now, type OrderRow, type VoucherRow } from './db';
 import { sendMail } from './mail';
@@ -136,7 +136,7 @@ export function describeSpec(spec: PlannerSpec): string {
     `Layout: ${layout.name} (${layout.orientation === 'quer' ? 'Querformat' : 'Hochformat'})`,
     `Titel: ${spec.design.title.text}`,
     `Zeitraum: ${MONTHS_DE[a.m - 1]} ${a.y} bis ${MONTHS_DE[b.m - 1]} ${b.y}`,
-    `Feiertage: ${spec.calendars.publicHolidays ? STATES[spec.state] : 'keine'}`,
+    `Feiertage: ${spec.calendars.publicHolidays ? [STATES[spec.state], ...REGIONAL_HOLIDAYS.filter((h) => spec.calendars.regional?.includes(h.id)).map((h) => `mit ${h.name}`)].join(', ') : 'keine'}`,
     `Schulferien: ${spec.calendars.school.map((s) => STATES[s]).join(', ') || 'keine'}`,
     `Weitere Einträge: ${spec.events.length}`,
     `Geburtstage: ${spec.birthdays.length}`,
