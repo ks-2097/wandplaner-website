@@ -1,5 +1,7 @@
 FROM node:22-bookworm-slim AS build
 WORKDIR /app
+# better-sqlite3 compiles a native module when no prebuilt binary matches
+RUN apt-get update && apt-get install -y --no-install-recommends python3 make g++ && rm -rf /var/lib/apt/lists/*
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
