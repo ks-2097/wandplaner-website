@@ -1,0 +1,7 @@
+node_modules
+.next
+.git
+var
+.env
+*.md
+tests
