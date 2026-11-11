@@ -68,6 +68,8 @@ export function createOrder(input: { kind: 'planner'; spec: unknown; customer: C
     created_at: now(),
     paid_at: null,
     shipped_at: null,
+    keep_design: 0,
+    design_deleted_at: null,
   };
   getDb()
     .prepare(
@@ -116,7 +118,7 @@ export async function fulfilOrder(orderId: string, payment: { sessionId?: string
       await sendMail(
         order.email,
         `Deine Bestellung bei plana studio (${order.number})`,
-        `Hallo ${order.name},\n\ndanke für deine Bestellung. Wir drucken jetzt deinen Planer.\n\n${describeOrder(order)}\n\nDen Stand deiner Bestellung siehst du hier:\n${statusUrl}\n\nSobald der Planer unterwegs ist, bekommst du eine Mail mit der Sendungsnummer.\n\nDein Planer wird nach deinen Angaben gefertigt. Deshalb besteht kein Widerrufsrecht (§ 312g Abs. 2 Nr. 1 BGB). Unsere AGB findest du unter ${config.siteUrl}/agb.\n\nplana studio\n${config.siteUrl}`,
+        `Hallo ${order.name},\n\ndanke für deine Bestellung. Wir drucken jetzt deinen Planer.\n\n${describeOrder(order)}\n\nDen Stand deiner Bestellung siehst du hier:\n${statusUrl}\n\nSobald der Planer unterwegs ist, bekommst du eine Mail mit der Sendungsnummer.\n\nDein Design löschen wir ${RETENTION.afterShippingDays} Tage nach dem Versand. Wenn du es für eine Nachbestellung behalten möchtest, kannst du das über den Link oben einstellen.\n\nDein Planer wird nach deinen Angaben gefertigt. Deshalb besteht kein Widerrufsrecht (§ 312g Abs. 2 Nr. 1 BGB). Unsere AGB findest du unter ${config.siteUrl}/agb.\n\nplana studio\n${config.siteUrl}`,
       );
     }
     if (config.orderNotifyEmail) await sendMail(config.orderNotifyEmail, `Neue Bestellung ${order.number} (${order.kind === 'voucher' ? 'Gutschein' : 'Planer'})`, `${describeOrder(order)}\n\n${config.siteUrl}/admin`);
@@ -145,8 +147,8 @@ export function describeSpec(spec: PlannerSpec): string {
 
 export function describeOrder(order: OrderRow): string {
   const lines = [`Bestellnummer: ${order.number}`];
-  if (order.kind === 'planner' && order.spec) {
-    lines.push(`${PRODUCT.name}, ${PRODUCT.paper}`, describeSpec(JSON.parse(order.spec) as PlannerSpec));
+  if (order.kind === 'planner') {
+    lines.push(`${PRODUCT.name}, ${PRODUCT.paper}`, order.spec ? describeSpec(JSON.parse(order.spec) as PlannerSpec) : 'Design: gelöscht');
     const a = order.address ? (JSON.parse(order.address) as Address) : undefined;
     if (a) lines.push(`Lieferung an: ${order.name}, ${a.street}, ${a.zip} ${a.city}`);
   } else lines.push('Gutschein für einen Wandplaner');
@@ -166,4 +168,49 @@ export async function setOrderStatus(orderId: string, status: 'in_production' | 
       `Dein Planer ist unterwegs (${order.number})`,
       `Hallo ${order.name},\n\ndein Planer ist heute in den Versand gegangen. Er kommt in der Rolle.${tracking ? `\n\nSendungsnummer: ${tracking}` : ''}\n\nStand deiner Bestellung: ${config.siteUrl}/bestellung/${order.id}?t=${order.token}\n\nViel Freude damit.\n\nplana studio\n${config.siteUrl}`,
     ).catch((err) => console.error('Shipping mail failed', order.number, err));
+}
+
+// ---- Deletion schedule
+
+export const RETENTION = {
+  /** Design data is removed this many days after the planner was shipped (time for complaints and reprints) */
+  afterShippingDays: 30,
+  /** A design the customer asked us to keep is removed this many days after the order at the latest */
+  keptDesignDays: 550,
+  /** Orders that were started but never paid are removed entirely */
+  unpaidDays: 30,
+} as const;
+
+/** The customer decides, through the link to their order, whether we keep the design for a reorder. */
+export function setKeepDesign(orderId: string, token: string, keep: boolean): boolean {
+  const order = getOrder(orderId);
+  if (!order || order.token !== token || order.kind !== 'planner' || !order.spec) return false;
+  getDb().prepare('UPDATE orders SET keep_design = ? WHERE id = ?').run(keep ? 1 : 0, orderId);
+  return true;
+}
+
+/**
+ * Applies the deletion schedule. The design (title, entries, birthdays) goes; what the
+ * invoice needs stays (number, amounts, name, address). Print files are never stored,
+ * they are generated from the design on download, so there is nothing else to remove.
+ * An order that is paid but never marked "Versandt" is not touched: it may still need printing.
+ */
+export function purgeExpiredDesigns(at: Date = new Date()): { designs: number; unpaid: number } {
+  const db = getDb();
+  const before = (days: number) => new Date(at.getTime() - days * 86_400_000).toISOString();
+  const stamp = at.toISOString();
+  const designs =
+    db
+      .prepare(
+        `UPDATE orders SET spec = NULL, design_deleted_at = ?
+         WHERE kind = 'planner' AND spec IS NOT NULL AND keep_design = 0
+           AND ((status = 'shipped' AND shipped_at < ?) OR (status = 'cancelled' AND created_at < ?))`,
+      )
+      .run(stamp, before(RETENTION.afterShippingDays), before(RETENTION.afterShippingDays)).changes +
+    db
+      .prepare("UPDATE orders SET spec = NULL, design_deleted_at = ?, keep_design = 0 WHERE kind = 'planner' AND spec IS NOT NULL AND keep_design = 1 AND status IN ('shipped', 'cancelled') AND created_at < ?")
+      .run(stamp, before(RETENTION.keptDesignDays)).changes;
+  const unpaid = db.prepare("DELETE FROM orders WHERE status = 'pending' AND created_at < ?").run(before(RETENTION.unpaidDays)).changes;
+  if (designs || unpaid) console.log(`Deletion schedule: ${designs} designs removed, ${unpaid} unpaid orders removed`);
+  return { designs, unpaid };
 }

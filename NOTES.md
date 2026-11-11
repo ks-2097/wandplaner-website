@@ -36,6 +36,14 @@ Branch: `claude/sharp-mccarthy-7mwvaw` (develop and push here only).
 8. Test order end to end (payment, mails, admin PDF). Test prints of each layout.
 9. Waiting-list form: Brevo action URL in `NEXT_PUBLIC_WAITLIST_URL` (needs a rebuild).
 
+## Deletion schedule (built in, `src/lib/orders.ts`)
+
+- Design data is deleted 30 days after an order is marked "Versandt" (or cancelled). Print files are never stored.
+- Customers can opt in to keeping the design, on their order page (the link in the order mail, no account). Kept designs go after 550 days at the latest.
+- Unpaid orders are deleted after 30 days.
+- Orders that are paid but never marked "Versandt" are not purged, so always set the status in /admin.
+- Runs at server start, every six hours, and when /admin is opened.
+
 ## Go-live checklist
 
 - All open items 1–8 done, Stripe switched to live keys, a test order checked.

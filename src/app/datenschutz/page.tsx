@@ -18,6 +18,8 @@ export default function Legal() {
           <p>Diese Seite setzt keine Cookies zu Werbe- oder Analysezwecken. Schriften liegen auf unserem eigenen Server. Dein Entwurf wird im Speicher deines Browsers abgelegt, damit er beim nächsten Besuch noch da ist; er wird erst mit der Bestellung an uns übertragen.</p>
           <h2>Bestellungen</h2>
           <p>Wenn du bestellst, verarbeiten wir deinen Namen, deine E-Mail-Adresse, deine Lieferadresse und die Angaben auf deinem Planer (Titel, Geburtstage, Termine), um den Vertrag zu erfüllen (Art. 6 Abs. 1 lit. b DSGVO). Geburtstage und Namen anderer Personen trägst du in eigener Verantwortung ein. Für den Druck und den Versand geben wir die Druckdatei und die Lieferadresse an <span className="todo">[Druckpartner, Ort]</span> weiter. Rechnungs- und Bestelldaten bewahren wir nach den gesetzlichen Fristen auf.</p>
+          <h2>Löschung deines Designs</h2>
+          <p>Dein Design (Titel, Termine, Geburtstage) löschen wir automatisch 30 Tage nach dem Versand; so lange brauchen wir es für Reklamationen und Nachdrucke. Eine Druckdatei speichern wir nicht, sie wird nur beim Druck aus dem Design erzeugt. Bestellungen, die nicht bezahlt wurden, löschen wir nach 30 Tagen vollständig. Wenn du es wünschst, bewahren wir dein Design für eine Nachbestellung länger auf, höchstens 18 Monate (Art. 6 Abs. 1 lit. a DSGVO). Diese Einwilligung gibst und widerrufst du über den Link in deiner Bestellmail.</p>
           <h2>Zahlung</h2>
           <p>Zahlungen wickelt Stripe Payments Europe, Ltd., Dublin, ab. Stripe erhält dafür deine E-Mail-Adresse, den Betrag und die Zahlungsdaten, die du dort eingibst. Wir selbst sehen keine Karten- oder Kontodaten.</p>
           <h2>Design-Assistent und Geburtstage per Foto</h2>

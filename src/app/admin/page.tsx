@@ -5,7 +5,7 @@ import { Wordmark } from '@/components/Site';
 import { checkPassword, isAdmin, signIn, signOut } from '@/lib/admin';
 import { config, euro } from '@/lib/config';
 import { rateLimit } from '@/lib/http';
-import { describeSpec, listOrders, setOrderStatus } from '@/lib/orders';
+import { describeSpec, listOrders, purgeExpiredDesigns, setOrderStatus } from '@/lib/orders';
 import type { Address } from '@/lib/orders';
 import type { PlannerSpec } from '@/planner';
 
@@ -52,6 +52,7 @@ export default async function Admin() {
       </main>
     );
 
+  purgeExpiredDesigns();
   const orders = listOrders();
   const open = orders.filter((o) => o.kind === 'planner' && (o.status === 'paid' || o.status === 'in_production')).length;
   return (
@@ -78,7 +79,7 @@ export default async function Admin() {
                     <td className="num">{o.number}<br /><span className="small">{new Date(o.created_at).toLocaleString('de-DE', { timeZone: 'Europe/Berlin', dateStyle: 'short', timeStyle: 'short' })}</span></td>
                     <td><span className="label accent box">{STATUS[o.status]}</span>{o.tracking && <><br /><span className="small">{o.tracking}</span></>}</td>
                     <td>{o.name}<br /><a href={`mailto:${o.email}`}>{o.email}</a>{a && <><br /><span className="small">{a.street}, {a.zip} {a.city}</span></>}</td>
-                    <td>{o.kind === 'voucher' ? 'Gutschein' : o.spec ? <pre className="plain">{describeSpec(JSON.parse(o.spec) as PlannerSpec)}</pre> : null}</td>
+                    <td>{o.kind === 'voucher' ? 'Gutschein' : o.spec ? <><pre className="plain">{describeSpec(JSON.parse(o.spec) as PlannerSpec)}</pre>{o.keep_design ? <span className="small">Design wird auf Wunsch aufbewahrt</span> : null}</> : <span className="small">Design gelöscht{o.design_deleted_at ? ` am ${new Date(o.design_deleted_at).toLocaleDateString('de-DE')}` : ''}</span>}</td>
                     <td className="num">{euro(o.amount_due)}{o.amount_voucher > 0 && <><br /><span className="small">+ {euro(o.amount_voucher)} Gutschein</span></>}</td>
                     <td>{o.spec ? <><a href={`/api/admin/orders/${o.id}/pdf`}>PDF laden</a><br /><a className="small" href={`/bestellung/${o.id}?t=${o.token}`}>Kundenansicht</a></> : '–'}</td>
                     <td>

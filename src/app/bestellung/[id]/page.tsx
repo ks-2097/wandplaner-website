@@ -4,7 +4,9 @@ import { notFound } from 'next/navigation';
 import { PlannerSvg } from '@/components/PlannerSvg';
 import { Page } from '@/components/Site';
 import { euro } from '@/lib/config';
-import { describeOrder, fulfilOrder, getOrder } from '@/lib/orders';
+import { revalidatePath } from 'next/cache';
+import { Redesign } from '@/components/Redesign';
+import { RETENTION, describeOrder, fulfilOrder, getOrder, setKeepDesign } from '@/lib/orders';
 import { stripe, stripeReady } from '@/lib/stripe';
 import { getDb, type VoucherRow } from '@/lib/db';
 import type { PlannerSpec } from '@/planner';
@@ -13,6 +15,14 @@ export const metadata: Metadata = { title: 'Deine Bestellung', robots: { index: 
 export const dynamic = 'force-dynamic';
 
 const STATUS = { pending: 'Zahlung offen', paid: 'Bestellt', in_production: 'Im Druck', shipped: 'Versandt', cancelled: 'Storniert' } as const;
+
+async function keepDesign(form: FormData) {
+  'use server';
+  const id = String(form.get('id') ?? '');
+  // The link to the order is the key: only someone who has it can change the choice.
+  setKeepDesign(id, String(form.get('t') ?? ''), form.get('keep') === '1');
+  revalidatePath(`/bestellung/${id}`);
+}
 
 export default async function Bestellung({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ t?: string; session_id?: string }> }) {
   const { id } = await params;
@@ -44,6 +54,34 @@ export default async function Bestellung({ params, searchParams }: { params: Pro
             </>
           )}
         </div>
+        {order.kind === 'planner' && order.status !== 'pending' && (
+          <div className="panel stack">
+            <h2 className="h2">Dein Design</h2>
+            {!order.spec ? (
+              <p>Dein Design haben wir gelöscht, wie angekündigt. Für einen neuen Planer startest du einfach im Konfigurator.</p>
+            ) : order.keep_design ? (
+              <>
+                <p>Wir bewahren dein Design für eine Nachbestellung auf. Du kannst das jederzeit beenden, dann löschen wir es {RETENTION.afterShippingDays} Tage nach dem Versand.</p>
+                <div className="row">
+                  <Redesign spec={JSON.parse(order.spec) as PlannerSpec} />
+                  <form action={keepDesign}>
+                    <input type="hidden" name="id" value={order.id} /><input type="hidden" name="t" value={order.token} /><input type="hidden" name="keep" value="0" />
+                    <button className="btn secondary" type="submit">Design doch löschen</button>
+                  </form>
+                </div>
+              </>
+            ) : (
+              <>
+                <p>Dein Design mit Titel, Terminen und Geburtstagen löschen wir {RETENTION.afterShippingDays} Tage nach dem Versand. Möchtest du es behalten, damit du im nächsten Jahr mit einem Klick nachbestellen kannst?</p>
+                <form action={keepDesign}>
+                  <input type="hidden" name="id" value={order.id} /><input type="hidden" name="t" value={order.token} /><input type="hidden" name="keep" value="1" />
+                  <button className="btn" type="submit">Ja, Design für die Nachbestellung aufbewahren</button>
+                </form>
+                <p className="small">Freiwillig und jederzeit widerrufbar, über diese Seite. Du brauchst kein Konto: der Link aus deiner Bestellmail führt dich immer hierher.</p>
+              </>
+            )}
+          </div>
+        )}
         <div className="split">
           <div className="stack">
             <h2 className="h2">Übersicht</h2>

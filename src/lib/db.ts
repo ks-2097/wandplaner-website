@@ -62,6 +62,10 @@ export function getDb(): Database.Database {
       PRIMARY KEY (day, key)
     );
   `);
+  // Columns added after the first release
+  const cols = (db.prepare("PRAGMA table_info('orders')").all() as { name: string }[]).map((c) => c.name);
+  if (!cols.includes('keep_design')) db.exec('ALTER TABLE orders ADD COLUMN keep_design INTEGER NOT NULL DEFAULT 0');
+  if (!cols.includes('design_deleted_at')) db.exec('ALTER TABLE orders ADD COLUMN design_deleted_at TEXT');
   return db;
 }
 
@@ -86,6 +90,10 @@ export type OrderRow = {
   created_at: string;
   paid_at: string | null;
   shipped_at: string | null;
+  /** 1 = the customer asked us to keep the design for a reorder */
+  keep_design: number;
+  /** Set when the design data was removed under the deletion schedule */
+  design_deleted_at: string | null;
 };
 
 export type VoucherRow = { code: string; initial_cents: number; balance_cents: number; order_id: string | null; created_at: string };
