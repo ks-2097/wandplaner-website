@@ -15,8 +15,10 @@ export const viewport: Viewport = { themeColor: '#d8cde6', width: 'device-width'
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="de">
+    <html lang="de" suppressHydrationWarning>
       <head>
+        {/* Marks that scripts run, before the first paint, so CSS can lay out the interactive parts from the start. */}
+        <script dangerouslySetInnerHTML={{ __html: "document.documentElement.classList.add('js')" }} />
         <link rel="stylesheet" href="/fonts/fonts.css" />
         <link rel="preload" href="/fonts/poppins-latin-700-normal.woff2" as="font" type="font/woff2" crossOrigin="anonymous" />
       </head>
