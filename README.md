@@ -56,6 +56,36 @@ Caddy fetches the TLS certificate on its own. To update later: `git pull && dock
 4. In Stripe, add a webhook endpoint `https://plana-planer.de/api/stripe/webhook` with the events `checkout.session.completed` and `checkout.session.async_payment_succeeded`, and put its signing secret into `.env`. Switch on PayPal, Klarna and SEPA under Settings › Payment methods.
 5. Back up the `var/` folder (orders and vouchers) every night to somewhere off the server.
 
+## Automatic deployment
+
+A push to `main` runs the tests; if they pass, GitHub logs in to the server and runs `scripts/deploy.sh`: it pulls `main`, rebuilds, waits for the site to answer, and rolls back to the previous version if it doesn't. The deploy key can run only that script.
+
+One-time setup:
+
+1. On your PC, create a key used only for deploying (no passphrase, so GitHub can use it):
+
+```powershell
+ssh-keygen -t ed25519 -f $env:USERPROFILE\.ssh\plana_github_deploy -N '""' -C github-deploy
+```
+
+2. On the server, make `main` the branch it follows, then allow the key to run only the deploy script (replace `<PUBLIC KEY>` with the contents of `plana_github_deploy.pub`):
+
+```bash
+cd ~/wandplaner-website && git fetch origin main && git checkout -B main origin/main
+```
+
+```bash
+echo 'command="/root/wandplaner-website/scripts/deploy.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty <PUBLIC KEY>' >> ~/.ssh/authorized_keys
+```
+
+3. In the repository on GitHub, under Settings > Environments, create an environment named `production`. Under Settings > Secrets and variables > Actions, add three secrets to it:
+   - `DEPLOY_SSH_KEY`: the content of the private key file `plana_github_deploy`
+   - `DEPLOY_HOST`: `87.106.28.141`
+   - `DEPLOY_KNOWN_HOSTS`: the output of `ssh-keyscan -t ed25519 87.106.28.141`
+4. Under Settings > Branches, protect `main`: require a pull request and the `test` check before merging.
+
+After that, merging a pull request deploys it. The "Actions" tab shows the log of every deploy, and "Run workflow" on the CI workflow starts one by hand.
+
 ## Before the first sale
 
 - Fill in every marked placeholder in Impressum, Datenschutz, AGB, Widerruf and Versand, with texts from a legal-text service.

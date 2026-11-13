@@ -24,6 +24,10 @@ Branch: `claude/sharp-mccarthy-7mwvaw` (develop and push here only).
 - Admin password is set in the server's `.env` (entered by the owner during setup).
 - `SHOP_OPEN=false` (waiting list only). Keep it false until the go-live checklist below is done.
 
+## Deployment
+
+Automatic from GitHub: push to `main` -> tests -> SSH to the server -> `scripts/deploy.sh` (pull, rebuild, health check, rollback). Needs the one-time setup in README.md ("Automatic deployment"). Manual fallback: `ssh root@87.106.28.141 "cd ~/wandplaner-website && git pull && docker compose up -d --build"`.
+
 ## Open items
 
 1. Stripe: owner has created the account. Keys go into the server's `.env` only (`STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`). Start with test keys. Set `STRIPE_TAX=true` only after Stripe Tax is registered in the dashboard.
