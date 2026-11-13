@@ -17,10 +17,10 @@ jobs:
       - run: npm test
       - run: npm run build
 
-  # Runs only for pushes to main, after the tests above passed.
+  # Runs for pushes to main and for manual runs on main, after the tests above passed.
   deploy:
     needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     runs-on: ubuntu-latest
     environment: production
     concurrency: deploy-production
