@@ -115,6 +115,16 @@ select.input { appearance: none; background-image: linear-gradient(45deg, transp
 /* home */
 .hero { padding-block: var(--space-5); }
 .hero .wrap { display: grid; gap: var(--space-4); }
+@media (min-width: 900px) {
+  .hero .hero-split { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: var(--space-5); align-items: center; }
+  .hero .hero-split .display { font-size: clamp(44px, 5.4vw, 76px); }
+}
+.hero .hero-copy { display: grid; gap: var(--space-4); align-content: center; }
+.room { display: grid; gap: var(--space-2); min-width: 0; }
+.room img { display: block; width: 100%; height: auto; background: var(--brand-lilac); }
+.rooms { display: grid; gap: var(--space-4); }
+@media (min-width: 900px) { .rooms { grid-template-columns: minmax(0, 1.95fr) minmax(0, 0.88fr); align-items: end; } }
+.planner-frame .h2, .planner-frame .prose { color: var(--brand-ink); }
 .hero .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); align-items: center; }
 .cells { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); border-top: var(--stroke-month) solid var(--line-strong); border-left: var(--stroke-hairline) solid var(--line); }
 .cell { border-right: var(--stroke-hairline) solid var(--line); border-bottom: var(--stroke-hairline) solid var(--line); padding: var(--space-3); display: grid; gap: var(--space-2); align-content: start; min-height: 150px; }
