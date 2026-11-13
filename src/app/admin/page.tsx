@@ -7,12 +7,52 @@ import { config, euro } from '@/lib/config';
 import { rateLimit } from '@/lib/http';
 import { describeSpec, listOrders, purgeExpiredDesigns, setOrderStatus } from '@/lib/orders';
 import type { Address } from '@/lib/orders';
+import { posterflowEnabled } from '@/lib/posterflow';
+import type { OrderRow } from '@/lib/db';
 import type { PlannerSpec } from '@/planner';
 
 export const metadata: Metadata = { title: 'Bestellungen', robots: { index: false } };
 export const dynamic = 'force-dynamic';
 
 const STATUS = { pending: 'Zahlung offen', paid: 'Neu', in_production: 'Im Druck', shipped: 'Versandt', cancelled: 'Storniert' } as const;
+const PARTNER_STATUS: Record<string, string> = {
+  submitting: 'Wird gesendet',
+  unknown: 'Unklar, bitte Status aktualisieren',
+  failed: 'Abgelehnt',
+  error: 'Fehler bei Posterflow',
+  submitted: 'Übermittelt',
+  printed: 'Gedruckt',
+  label: 'Versandlabel erstellt',
+  shipped: 'Versandt',
+};
+const when = (iso: string) => new Date(iso).toLocaleString('de-DE', { timeZone: 'Europe/Berlin', dateStyle: 'short', timeStyle: 'short' });
+
+/** Posterflow column: status, their order number, and the send / refresh buttons. */
+function PartnerCell({ o }: { o: OrderRow }) {
+  if (o.kind !== 'planner') return <>–</>;
+  const canSend = o.status === 'paid' && !!o.spec && (!o.partner_status || o.partner_status === 'failed' || o.partner_status === 'unknown');
+  const action = `/api/admin/orders/${o.id}/posterflow`;
+  return (
+    <div className="stack" style={{ gap: 'var(--space-1)' }}>
+      {o.partner_status && <span className="label box">{PARTNER_STATUS[o.partner_status] ?? o.partner_status}</span>}
+      {o.partner_order_id && <span className="small">Auftrag {o.partner_order_id}</span>}
+      {o.partner_submitted_at && <span className="small">gesendet {when(o.partner_submitted_at)}</span>}
+      {o.partner_error && <span className="small" role="alert">{o.partner_error}</span>}
+      {canSend && (
+        <form method="post" action={action}>
+          <input type="hidden" name="action" value="send" />
+          <button className="btn small-btn" type="submit">An Posterflow senden</button>
+        </form>
+      )}
+      {o.partner_status && o.status !== 'shipped' && o.status !== 'cancelled' && (
+        <form method="post" action={action}>
+          <input type="hidden" name="action" value="refresh" />
+          <button className="btn secondary small-btn" type="submit">Status aktualisieren</button>
+        </form>
+      )}
+    </div>
+  );
+}
 
 async function login(form: FormData) {
   'use server';
@@ -54,6 +94,7 @@ export default async function Admin() {
 
   purgeExpiredDesigns();
   const orders = listOrders();
+  const partner = posterflowEnabled();
   const open = orders.filter((o) => o.kind === 'planner' && (o.status === 'paid' || o.status === 'in_production')).length;
   return (
     <main className="wrap section-tight stack-lg" style={{ maxWidth: 1400 }}>
@@ -61,7 +102,7 @@ export default async function Admin() {
         <div className="stack" style={{ gap: 'var(--space-1)' }}>
           <Wordmark />
           <h1 className="h2">Bestellungen</h1>
-          <p className="small">{orders.length} bezahlt · {open} zu drucken oder zu versenden</p>
+          <p className="small">{orders.length} bezahlt · {open} zu drucken oder zu versenden{partner && <> · <a href="/api/admin/posterflow/articles">Posterflow-Artikel anzeigen</a></>}</p>
         </div>
         <form action={logout}><button className="btn secondary small-btn" type="submit">Abmelden</button></form>
       </div>
@@ -70,7 +111,7 @@ export default async function Admin() {
       ) : (
         <div className="table-scroll">
           <table className="table">
-            <thead><tr><th>Nummer</th><th>Stand</th><th>Kundin / Kunde</th><th>Planer</th><th>Betrag</th><th>Druckdatei</th><th>Ändern</th></tr></thead>
+            <thead><tr><th>Nummer</th><th>Stand</th><th>Kundin / Kunde</th><th>Planer</th><th>Betrag</th><th>Druckdatei</th>{partner && <th>Posterflow</th>}<th>Ändern</th></tr></thead>
             <tbody>
               {orders.map((o) => {
                 const a = o.address ? (JSON.parse(o.address) as Address) : undefined;
@@ -82,6 +123,7 @@ export default async function Admin() {
                     <td>{o.kind === 'voucher' ? 'Gutschein' : o.spec ? <><pre className="plain">{describeSpec(JSON.parse(o.spec) as PlannerSpec)}</pre>{o.keep_design ? <span className="small">Design wird auf Wunsch aufbewahrt</span> : null}</> : <span className="small">Design gelöscht{o.design_deleted_at ? ` am ${new Date(o.design_deleted_at).toLocaleDateString('de-DE')}` : ''}</span>}</td>
                     <td className="num">{euro(o.amount_due)}{o.amount_voucher > 0 && <><br /><span className="small">+ {euro(o.amount_voucher)} Gutschein</span></>}</td>
                     <td>{o.spec ? <><a href={`/api/admin/orders/${o.id}/pdf`}>PDF laden</a><br /><a className="small" href={`/bestellung/${o.id}?t=${o.token}`}>Kundenansicht</a></> : '–'}</td>
+                    {partner && <td><PartnerCell o={o} /></td>}
                     <td>
                       {o.kind === 'planner' && o.status !== 'cancelled' && (
                         <form action={update} className="row">

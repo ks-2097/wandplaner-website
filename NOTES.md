@@ -36,9 +36,10 @@ Automatic from GitHub: push to `main` -> tests -> SSH to the server -> `scripts/
 4. Mail: SMTP account (Brevo planned). Set `SMTP_URL`. When Brevo is set up, merge its SPF rule into the single existing SPF TXT record. Only one SPF record is allowed.
 5. Anthropic API key for the design assistant and birthday scan (`ANTHROPIC_API_KEY`). Optional; features are off without it.
 6. Legal texts: placeholders in Impressum, Datenschutz, AGB, Widerruf, Versand need a legal-text service.
-7. Nightly backup of `var/` to a second location, plus a restore test. Not yet written.
+7. Backup: `scripts/backup.sh` and `docs/backup.md` are written and tested locally. Still to do: set it up on the server, including the off-server copy.
 8. Test order end to end (payment, mails, admin PDF). Test prints of each layout.
 9. Waiting-list form: Brevo action URL in `NEXT_PUBLIC_WAITLIST_URL` (needs a rebuild).
+10. Posterflow hand-off is built but off until `POSTERFLOW_API_KEY`, `PRINT_FILE_SECRET` and the `POSTERFLOW_SENDER_*` address are set. Before the first real order: check `/api/admin/posterflow/articles` for the right `POSTERFLOW_ARTICLE_TYPE` / size values (inferred `white250`, `70x100`), ask Posterflow whether landscape files need `100x70`, and confirm that the file we send them (exact trim size, no bleed, per their "no bleed" rule) prints edge to edge without a white border. Agree the callback URL `<SITE_URL>/api/posterflow/webhook` and, if possible, a signing secret (`POSTERFLOW_WEBHOOK_SECRET`). Without a secret the callback only triggers a status check through the API. Tested with mocks only, never against their API.
 
 ## Deletion schedule (built in, `src/lib/orders.ts`)
 
@@ -47,6 +48,7 @@ Automatic from GitHub: push to `main` -> tests -> SSH to the server -> `scripts/
 - Unpaid orders are deleted after 30 days.
 - Orders that are paid but never marked "Versandt" are not purged, so always set the status in /admin.
 - Runs at server start, every six hours, and when /admin is opened.
+- Posterflow print orders get the print file through a signed link that expires after `PRINT_FILE_URL_DAYS` (14). The PDF is rendered when Posterflow downloads it; nothing is written to disk. Posterflow's own retention of files and addresses is not documented (AVV open, see `docs/posterflow.md`).
 
 ## Go-live checklist
 

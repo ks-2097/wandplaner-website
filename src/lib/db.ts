@@ -66,6 +66,9 @@ export function getDb(): Database.Database {
   const cols = (db.prepare("PRAGMA table_info('orders')").all() as { name: string }[]).map((c) => c.name);
   if (!cols.includes('keep_design')) db.exec('ALTER TABLE orders ADD COLUMN keep_design INTEGER NOT NULL DEFAULT 0');
   if (!cols.includes('design_deleted_at')) db.exec('ALTER TABLE orders ADD COLUMN design_deleted_at TEXT');
+  // Print partner hand-off (all nullable, so existing rows stay as they are)
+  for (const col of ['partner', 'partner_order_id', 'partner_status', 'partner_submitted_at', 'partner_checked_at', 'partner_error'])
+    if (!cols.includes(col)) db.exec(`ALTER TABLE orders ADD COLUMN ${col} TEXT`);
   return db;
 }
 
@@ -94,6 +97,16 @@ export type OrderRow = {
   keep_design: number;
   /** Set when the design data was removed under the deletion schedule */
   design_deleted_at: string | null;
+  /** Print partner the order was sent to, e.g. 'posterflow' */
+  partner?: string | null;
+  /** The partner's own order number */
+  partner_order_id?: string | null;
+  /** See PartnerState in src/lib/print-partner.ts */
+  partner_status?: string | null;
+  partner_submitted_at?: string | null;
+  partner_checked_at?: string | null;
+  /** Last error from the partner or from our side, shown in /admin */
+  partner_error?: string | null;
 };
 
 export type VoucherRow = { code: string; initial_cents: number; balance_cents: number; order_id: string | null; created_at: string };
