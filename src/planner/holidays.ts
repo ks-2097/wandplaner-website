@@ -99,6 +99,8 @@ export function publicHolidays(year: number, state: StateCode, regional: readonl
   add(fixed(1, 1), 'Neujahr', 'NEUJAHR', ALL);
   add(fixed(1, 6), 'Heilige Drei Könige', 'HL. DREI KÖNIGE', only('BW', 'BY', 'ST'));
   add(fixed(3, 8), 'Internationaler Frauentag', 'FRAUENTAG', only('BE', 'MV'));
+  // One-off statutory holiday in Berlin (a Saturday).
+  if (year === 2028) add(fixed(6, 17), '75. Jahrestag des Volksaufstands vom 17. Juni 1953', '17. JUNI', only('BE'));
   add(easter - 2, 'Karfreitag', 'KARFREITAG', ALL);
   add(easter, 'Ostersonntag', 'OSTERSONNTAG', ALL, state === 'BB');
   add(easter + 1, 'Ostermontag', 'OSTERMONTAG', ALL);

@@ -24,13 +24,13 @@ describe('dates', () => {
 });
 
 describe('public holidays', () => {
-  // Every state, every date in the OpenHolidays snapshot (Oct 2026 – Mar 2028)
-  const ref = (reference as { holidays: { date: string; name: string; states: string[] }[] }).holidays;
+  // Every state, every date in the OpenHolidays snapshot (its range is in the file's meta)
+  const { holidays: ref, meta } = reference as { meta: { from: string; to: string }; holidays: { date: string; name: string; states: string[] }[] };
   for (const state of STATE_CODES) {
     it(`match the OpenHolidays reference for ${state}`, () => {
       const expected = ref.filter((h) => h.states.includes(state)).map((h) => h.date).sort();
-      const from = parseIso('2026-10-01');
-      const to = parseIso('2028-03-31');
+      const from = parseIso(meta.from);
+      const to = parseIso(meta.to);
       const ours: string[] = [];
       for (const y of [2026, 2027, 2028])
         for (const [day, mark] of publicHolidays(y, state)) if (mark.dayOff && day >= from && day <= to) ours.push(iso(fromDayNumber(day)));
