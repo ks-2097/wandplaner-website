@@ -1,0 +1,25 @@
+# One small server runs everything: the shop and Caddy, which fetches the TLS certificate.
+services:
+  app:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_WAITLIST_URL: ${NEXT_PUBLIC_WAITLIST_URL:-}
+    restart: unless-stopped
+    env_file: .env
+    volumes:
+      - ./var:/app/var # orders and vouchers (SQLite); back this folder up
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports: ["80:80", "443:443"]
+    environment:
+      SITE_DOMAIN: ${SITE_DOMAIN:-plana-planer.de}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on: [app]
+volumes:
+  caddy_data:
+  caddy_config:
