@@ -136,6 +136,43 @@ describe('layout engine', () => {
     }
   });
 
+  it('draws thick lines only where a month starts, with no frame around the sheet', () => {
+    const rects = (spec: ReturnType<typeof defaultSpec>) =>
+      buildScene(spec).prims.flatMap((p) => (p.k === 'rect' && p.fill === spec.design.colors.accent && p.o === undefined ? [p] : []));
+    const lw = defaultSpec().design.lines.month;
+    const near = (a: number, b: number) => Math.abs(a - b) < 0.01;
+    const [gx, gy, rh] = [32.5, 75.6, 590 / 13];
+
+    // wochen: no bar on the sheet's right edge, none along the top, and none on the left
+    // edge of a row that does not begin with a month (row 1 starts with 29 Nov).
+    const w = rects(defaultSpec({ start: { year: 2026, month: 11 } }));
+    expect(w.some((b) => near(b.x + b.w, 32.5 + 935) && b.h > 20)).toBe(false);
+    expect(w.some((b) => near(b.y, gy) && b.w > 100)).toBe(false);
+    expect(w.some((b) => near(b.x, gx) && near(b.y, gy + rh) && b.h > b.w)).toBe(false);
+    expect(w.some((b) => near(b.x, gx + 28 * 0 + (935 / 28) * 2) && near(b.y, gy + rh) && b.h > b.w)).toBe(true); // 1 Dec
+
+    // The inward corner of the stair: January starts at row 2, column 5, so the bar along the top
+    // of row 3 (cols 0-4) ends at the foot of the vertical bar. It sits above the grid line, and
+    // nothing pokes into the cell below.
+    const [cw, y3, x5] = [935 / 28, gy + 3 * rh, gx + 5 * (935 / 28)];
+    expect(w.some((b) => b.w > b.h && near(b.y + b.h, y3) && near(b.x + b.w, x5) && near(b.x, gx))).toBe(true);
+    expect(w.some((b) => near(b.y, y3) && b.x < x5 && near(b.x + b.w, x5 + lw))).toBe(false);
+    // the outward corner of the stair (1 December, row 1, column 2) stays inside the cells below
+    expect(w.some((b) => b.w > b.h && near(b.y, gy + rh) && near(b.x, gx + 2 * cw))).toBe(true);
+
+    // zeilen: one vertical bar per month at the left, a top bar for months 2-12, nothing at the bottom
+    const z = rects(defaultSpec({ layout: 'zeilen' }));
+    expect(z.filter((b) => b.h > b.w && near(b.x, gx)).length).toBe(12);
+    expect(z.filter((b) => b.w > b.h).length).toBe(11);
+    expect(z.some((b) => b.w > b.h && near(b.y + b.h, 72 + 593.6))).toBe(false); // no line closing the bottom
+
+    // spalten: one vertical bar per month, nothing horizontal, nothing on the right edge
+    const s = rects(defaultSpec({ layout: 'spalten' }));
+    expect(s.length).toBe(12);
+    expect(s.every((b) => b.h > b.w && near(b.w, lw))).toBe(true);
+    expect(s.some((b) => near(b.x + b.w, 32.5 + 635))).toBe(false);
+  });
+
   it('places birthdays, events and a second state', () => {
     const spec = defaultSpec({ start: { year: 2027, month: 1 } });
     spec.birthdays = [{ name: 'Oma Inge', day: 14, month: 3 }, { name: 'Schalttag', day: 29, month: 2 }];
