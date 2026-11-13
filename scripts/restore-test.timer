@@ -1,0 +1,10 @@
+[Unit]
+Description=Run the plana studio restore test every Sunday morning
+
+[Timer]
+OnCalendar=Sun *-*-* 05:00:00
+RandomizedDelaySec=20min
+Persistent=true
+
+[Install]
+WantedBy=timers.target
