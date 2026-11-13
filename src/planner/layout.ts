@@ -83,7 +83,7 @@ type Frame = {
   dir: 'h' | 'v';
   cells: Cell[];
   thin: Seg[];
-  /** Month lines and frame as centre lines; drawn thin when the design has no month line */
+  /** Month lines as centre lines; drawn thin when the design has no month line */
   thick: Seg[];
   /**
    * The same lines as bars [x, y, w, h] of the month line's width. A bar never straddles
@@ -356,22 +356,35 @@ function frameWochen({ spec, days, body, labelFace, labelLs }: Ctx): Frame {
   for (let c = 1; c < COLS; c++) thin.push([g.x + c * cw, g.y, g.x + c * cw, g.y + g.h]);
   for (let r = 1; r < ROWS; r++) thin.push([g.x, g.y + r * rh, g.x + g.w, g.y + r * rh]);
 
-  // A thick edge wherever two neighbouring cells belong to different months, plus the frame
-  const thick: Seg[] = [
-    [g.x, g.y, g.x + g.w, g.y],
-    [g.x, g.y + g.h, g.x + g.w, g.y + g.h],
-    [g.x, g.y, g.x, g.y + g.h],
-    [g.x + g.w, g.y, g.x + g.w, g.y + g.h],
-  ];
+  // Thick lines mark months. They run wherever two neighbouring cells belong to different
+  // months, along the top and the bottom of the sheet (the start of the first month and the
+  // end of the last one), and at the left or right edge of a row where a month starts or ends.
+  // The rest of the left and right edge is a thin line like the grid.
+  const thick: Seg[] = [];
   const lw = spec.design.lines.month;
   const right = g.x + g.w;
-  const bars: Seg[] = [
-    [g.x, g.y, g.w, lw],
-    [g.x, g.y + g.h - lw, g.w, lw],
-    [g.x, g.y, lw, g.h],
-    [right - lw, g.y, lw, g.h],
-  ];
+  const bars: Seg[] = [];
+  const startsRow = (r: number) => days[r * COLS].d === 1;
+  const endsRow = (r: number) => r * COLS + COLS < days.length && days[r * COLS + COLS].d === 1;
+  for (let r = 0; r < ROWS; r++) {
+    if (!(lw > 0 && startsRow(r))) thin.push([g.x, g.y + r * rh, g.x, g.y + (r + 1) * rh]);
+    if (!(lw > 0 && endsRow(r))) thin.push([right, g.y + r * rh, right, g.y + (r + 1) * rh]);
+  }
+  if (lw <= 0) thin.push([g.x, g.y, right, g.y], [g.x, g.y + g.h, right, g.y + g.h]);
   if (spec.design.lines.month > 0) {
+    // The top bar hangs inside the first row, the bottom bar stands inside the last row.
+    thick.push([g.x, g.y, right, g.y], [g.x, g.y + g.h, right, g.y + g.h]);
+    bars.push([g.x, g.y, g.w, lw], [g.x, g.y + g.h - lw, g.w, lw]);
+    for (let r = 0; r < ROWS; r++) {
+      if (startsRow(r)) {
+        thick.push([g.x, g.y + r * rh, g.x, g.y + (r + 1) * rh]);
+        bars.push([g.x, g.y + r * rh, lw, rh]);
+      }
+      if (endsRow(r)) {
+        thick.push([right, g.y + r * rh, right, g.y + (r + 1) * rh]);
+        bars.push([right - lw, g.y + r * rh, lw, rh]);
+      }
+    }
     for (let r = 1; r < ROWS; r++) {
       let run = -1;
       for (let c = 0; c <= COLS; c++) {
@@ -379,8 +392,13 @@ function frameWochen({ spec, days, body, labelFace, labelLs }: Ctx): Frame {
         if (differs && run < 0) run = c;
         if (!differs && run >= 0) {
           thick.push([g.x + run * cw, g.y + r * rh, g.x + c * cw, g.y + r * rh]);
-          // Runs on by one line width so it closes the corner with the vertical bar it meets.
-          bars.push([g.x + run * cw, g.y + r * rh, Math.min(g.x + c * cw + lw, right) - (g.x + run * cw), lw]);
+          // Normally the bar hangs below the grid line, inside the top of the month's cells. Where
+          // the run ends at the foot of a vertical month-start bar (the inward corner of the stair),
+          // it sits above the line instead, inside the bottom of the previous month's cells. Both
+          // bars then end on the same grid line and the corner no longer pokes into a cell.
+          const endsAtVertical = c < COLS && days[(r - 1) * COLS + c - 1].m !== days[(r - 1) * COLS + c].m;
+          const x0 = g.x + run * cw;
+          bars.push([x0, g.y + r * rh - (endsAtVertical ? lw : 0), g.x + c * cw - x0, lw]);
           run = -1;
         }
       }
@@ -416,9 +434,9 @@ function frameZeilen({ spec, days, body, labelLs }: Ctx): Frame {
   const months = monthsOf(days);
   const cells: Cell[] = [];
   const thin: Seg[] = [];
-  const thick: Seg[] = [[g.x, g.y, g.x, g.y + g.h]];
+  const thick: Seg[] = [];
   const lw = spec.design.lines.month;
-  const bars: Seg[] = [[g.x, g.y, lw, g.h]];
+  const bars: Seg[] = [];
   const extras: Prim[] = [];
 
   months.forEach((mo, r) => {
@@ -426,13 +444,15 @@ function frameZeilen({ spec, days, body, labelLs }: Ctx): Frame {
     const right = x0 + mo.len * cw;
     for (let k = 0; k < mo.len; k++) cells.push({ i: mo.first + k, x: x0 + k * cw, y: top, w: cw, h: rh, group: r });
     for (let k = 0; k < mo.len; k++) thin.push([x0 + k * cw, top, x0 + k * cw, top + rh]);
-    // Every row is a month, so every row edge is a month line; the right edge is ragged.
-    const prevRight = r === 0 ? right : x0 + months[r - 1].len * cw;
-    thick.push([g.x, top, Math.max(right, prevRight), top]);
-    thick.push([right, top, right, top + rh]);
-    if (r === 11) thick.push([g.x, top + rh, right, top + rh]);
-    bars.push([g.x, top, Math.max(right, prevRight) - g.x, lw], [right - lw, top, lw, rh]);
-    if (r === 11) bars.push([g.x, top + rh - lw, right - g.x, lw]);
+    // A month starts at the left of its row: a line stands inside the left edge of the first cell,
+    // and a line runs inside the top of the row where it follows another month. Nothing closes
+    // the row at its right end or at the bottom of the sheet.
+    thick.push([g.x, top, g.x, top + rh]);
+    bars.push([g.x, top, lw, rh]);
+    if (r > 0) {
+      thick.push([g.x, top, right, top]);
+      bars.push([g.x, top, right - g.x, lw]);
+    }
     extras.push({ k: 'text', x: g.x + M.padX, y: top + 6.4, s: MONTHS_DE[mo.m - 1].toLocaleUpperCase('de-DE'), face: body(700), size: 3.3, fill: accent, ls: 0.05 });
     if (mo.m === 1 || r === 0) extras.push({ k: 'text', x: g.x + M.padX, y: top + 11, s: String(mo.y), face: body(400), size: M.yearSize, fill: accent });
   });
@@ -459,9 +479,9 @@ function frameSpalten({ spec, days, body }: Ctx): Frame {
   const months = monthsOf(days);
   const cells: Cell[] = [];
   const thin: Seg[] = [];
-  const thick: Seg[] = [[g.x, g.y, g.x + g.w, g.y]];
+  const thick: Seg[] = [];
   const lw = spec.design.lines.month;
-  const bars: Seg[] = [[g.x, g.y, g.w, lw]];
+  const bars: Seg[] = [];
   const extras: Prim[] = [];
 
   months.forEach((mo, c) => {
@@ -469,12 +489,10 @@ function frameSpalten({ spec, days, body }: Ctx): Frame {
     const bottom = y0 + mo.len * rh;
     for (let k = 0; k < mo.len; k++) cells.push({ i: mo.first + k, x: left, y: y0 + k * rh, w: cw, h: rh, group: c });
     for (let k = 0; k < mo.len; k++) thin.push([left, y0 + k * rh, left + cw, y0 + k * rh]);
-    const prevBottom = c === 0 ? bottom : y0 + months[c - 1].len * rh;
-    thick.push([left, g.y, left, Math.max(bottom, prevBottom)]);
-    thick.push([left, bottom, left + cw, bottom]);
-    if (c === 11) thick.push([left + cw, g.y, left + cw, bottom]);
-    bars.push([left, g.y, lw, Math.max(bottom, prevBottom) - g.y], [left, bottom - lw, cw, lw]);
-    if (c === 11) bars.push([left + cw - lw, g.y, lw, bottom - g.y]);
+    // A month starts at the left of its column: one line stands inside the left edge, as long as
+    // the column. No line closes the column at the bottom, the right or the top of the sheet.
+    thick.push([left, g.y, left, bottom]);
+    bars.push([left, g.y, lw, bottom - g.y]);
     const name = MONTHS_DE[mo.m - 1].toLocaleUpperCase('de-DE');
     const nameFace = body(700);
     extras.push({ k: 'text', x: left + M.padX, y: g.y + 6.6, s: name, face: nameFace, size: 3.3, fill: accent, ls: 0.05 });
