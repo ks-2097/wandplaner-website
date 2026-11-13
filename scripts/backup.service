@@ -1,0 +1,11 @@
+[Unit]
+Description=Nightly backup of the plana studio shop database
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/root/wandplaner-website/scripts/backup.sh
+UMask=0077
+Nice=10
+TimeoutStartSec=30min

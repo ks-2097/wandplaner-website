@@ -98,13 +98,15 @@ export function Configurator({ assistant }: { assistant: boolean }) {
             {scene.notes.map((n) => <p key={n}>{n}</p>)}
           </div>
         )}
-        <Assistant
-          enabled={assistant}
-          spec={spec}
-          canUndo={undo.length > 0}
-          onResult={(next) => { setUndo((u) => [...u.slice(-9), spec]); setSpec(next); }}
-          onUndo={() => { const last = undo[undo.length - 1]; if (last) { setSpec(last); setUndo((u) => u.slice(0, -1)); } }}
-        />
+        {assistant && (
+          <Assistant
+            enabled={assistant}
+            spec={spec}
+            canUndo={undo.length > 0}
+            onResult={(next) => { setUndo((u) => [...u.slice(-9), spec]); setSpec(next); }}
+            onUndo={() => { const last = undo[undo.length - 1]; if (last) { setSpec(last); setUndo((u) => u.slice(0, -1)); } }}
+          />
+        )}
       </div>
 
       <div>
@@ -538,11 +540,15 @@ function Birthdays({ rows, onChange, scan }: { rows: Row[]; onChange: (r: Row[])
       <div className="row">
         <button type="button" className="btn secondary small-btn" onClick={() => onChange([...rows, { name: '', day: '', month: '' }])}>Geburtstag eintragen</button>
       </div>
-      <label className="field">
-        <span className="label">Oder: Foto eures Geburtstagskalenders</span>
-        <input type="file" accept="image/jpeg,image/png,image/webp" disabled={!scan || busy} onChange={(e) => scanPhoto(e.target.files?.[0], e.target)} />
-      </label>
-      <p className="small">{scan ? 'Eine KI liest Namen und Daten aus dem Foto. Du prüfst und korrigierst die Liste, bevor etwas gedruckt wird. Das Foto wird nicht gespeichert.' : 'Das Einlesen per Foto ist auf dieser Seite noch nicht eingerichtet.'}</p>
+      {scan && (
+        <>
+        <label className="field">
+          <span className="label">Oder: Foto eures Geburtstagskalenders</span>
+          <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(e) => scanPhoto(e.target.files?.[0], e.target)} />
+        </label>
+        <p className="small">Eine KI liest Namen und Daten aus dem Foto. Du prüfst und korrigierst die Liste, bevor etwas gedruckt wird. Das Foto wird nicht gespeichert.</p>
+        </>
+      )}
       {msg.text && <p className="status" role="status" aria-live="polite" data-tone={msg.tone}>{msg.text}</p>}
     </>
   );

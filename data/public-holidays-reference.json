@@ -1,9 +1,9 @@
 {
  "meta": {
   "source": "OpenHolidays API (openholidaysapi.org), ODbL",
-  "fetchedAt": "2026-11-10",
+  "fetchedAt": "2026-11-13",
   "from": "2026-10-01",
-  "to": "2028-03-31"
+  "to": "2028-07-31"
  },
  "holidays": [
   {
@@ -431,6 +431,149 @@
    "states": [
     "BE",
     "MV"
+   ]
+  },
+  {
+   "date": "2028-04-14",
+   "name": "Karfreitag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2028-04-16",
+   "name": "Ostersonntag",
+   "states": [
+    "BB"
+   ]
+  },
+  {
+   "date": "2028-04-17",
+   "name": "Ostermontag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2028-05-01",
+   "name": "Tag der Arbeit",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2028-05-25",
+   "name": "Christi Himmelfahrt",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2028-06-04",
+   "name": "Pfingstsonntag",
+   "states": [
+    "BB"
+   ]
+  },
+  {
+   "date": "2028-06-05",
+   "name": "Pfingstmontag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2028-06-15",
+   "name": "Fronleichnam",
+   "states": [
+    "HE",
+    "SL",
+    "NW",
+    "BW",
+    "RP",
+    "BY"
+   ]
+  },
+  {
+   "date": "2028-06-17",
+   "name": "75-jährige Jubiläum des Volksaufstands in der DDR",
+   "states": [
+    "BE"
    ]
   }
  ]

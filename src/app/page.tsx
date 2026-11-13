@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import { PlannerSvg } from '@/components/PlannerSvg';
+import { RoomPhoto } from '@/components/RoomPhoto';
 import { Page, TripLine } from '@/components/Site';
 import { Waitlist } from '@/components/Waitlist';
 import { PRODUCT, config, euro, PRICES } from '@/lib/config';
@@ -12,20 +13,27 @@ export default function Home() {
   return (
     <Page>
       <section className="hero" aria-labelledby="hero-title">
-        <div className="wrap">
-          <p className="label">Wandplaner · 70 × 100 cm</p>
-          <h1 className="display" id="hero-title">das jahr als bild.</h1>
-          <p className="lead">Dein ganzes Jahr auf einem Blatt, gemacht für deine Wand: mit den Ferien und Feiertagen deines Bundeslandes, euren Geburtstagen und in deinem Design.</p>
-          <div className="actions">
-            <Link className="btn" href="/gestalten">Planer gestalten</Link>
-            <span className="small">{euro(PRICES.planner)} inkl. Versand{config.shopOpen ? ` · bis ${PRODUCT.lastOrderDate} bestellt, vor Weihnachten da` : ' · ab Ende November bestellbar'}</span>
+        <div className="wrap hero-split">
+          <div className="hero-copy">
+            <p className="label">Wandplaner · 70 × 100 cm</p>
+            <h1 className="display" id="hero-title">das jahr als bild.</h1>
+            <p className="lead">Dein ganzes Jahr auf einem Blatt, gemacht für deine Wand: mit den Ferien und Feiertagen deines Bundeslandes, euren Geburtstagen und in deinem Design.</p>
+            <div className="actions">
+              <Link className="btn" href="/gestalten">Planer gestalten</Link>
+              <span className="small">{euro(PRICES.planner)} inkl. Versand{config.shopOpen ? ` · bis ${PRODUCT.lastOrderDate} bestellt, vor Weihnachten da` : ' · ab Ende November bestellbar'}</span>
+            </div>
           </div>
+          <RoomPhoto scene="wohnzimmer" caption="Vier Wochen · Aubergine" sizes="(min-width: 900px) 56vw, 100vw" priority />
         </div>
       </section>
 
-      <section aria-label="Die Aubergine-Edition">
+      <section aria-labelledby="sheet-title">
         <div className="planner-frame">
-          <div className="wrap">
+          <div className="wrap stack">
+            <div className="stack" style={{ gap: 'var(--space-1)' }}>
+              <h2 className="h2" id="sheet-title">Jeder Tag hat seinen Platz</h2>
+              <p className="prose">Das ist die echte Druckdatei, nicht ein Foto davon: 13 Reihen mit je vier Wochen, die Wochenenden schattiert, die Schulferien als Linien über den Tagen.</p>
+            </div>
             <PlannerSvg spec={hero} label="Der Wandplaner zweitausend&siebenundzwanzig in Aubergine auf hellem Lila: 13 Reihen mit je vier Wochen, Wochenenden schattiert, Schulferien als Pfeillinien." />
             <div style={{ marginTop: 'var(--space-3)' }}><TripLine>Aubergine-Edition · Berlin · Januar bis Dezember 2027</TripLine></div>
           </div>
@@ -73,6 +81,20 @@ export default function Home() {
             ))}
           </div>
           <p><Link href="/editionen">Alle Editionen ansehen</Link></p>
+        </div>
+      </section>
+
+      <section className="section-tight" aria-labelledby="rooms-title">
+        <div className="wrap stack-lg">
+          <div className="stack">
+            <h2 className="h2" id="rooms-title">Dort, wo ihr jeden Tag vorbeikommt</h2>
+            <p className="prose">In der Küche, im Flur, über dem Schreibtisch: Der Planer hängt da, wo die ganze Familie hinschaut. Quer oder hoch, in der Farbe, die zu eurer Wand passt.</p>
+          </div>
+          <div className="rooms">
+            <RoomPhoto scene="kueche" caption="Monatszeilen · Salbei" sizes="(min-width: 900px) 58vw, 100vw" />
+            <RoomPhoto scene="flur" caption="Monatsspalten · Sand" sizes="(min-width: 900px) 30vw, 100vw" />
+          </div>
+          <p className="small">Die Räume sind am Computer entstanden, der Planer darin ist die echte Druckdatei. Geliefert wird der Druck gerollt, ohne Klammern oder Leiste.</p>
         </div>
       </section>
 

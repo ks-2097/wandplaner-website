@@ -30,6 +30,24 @@ for (const h of school) {
     out[code].push({ start: h.startDate, end: h.endDate, name: h.name[0].text });
   }
 }
+// Manual corrections that survive `npm run holidays`. Each one is documented in
+// docs/holiday-check.md with its official source. Re-check them after every refresh and
+// delete an entry once the API itself is right.
+const OVERRIDES = {
+  // OpenHolidays lists these four "Zusätzlicher Ferientag" days for general schools too, but
+  // the ministry (https://land-mv.de/seite/ferientermine) sets them for vocational schools
+  // (berufliche Schulen) only. General schools have only 07.05.2027 and 26.05.2028.
+  remove: [
+    { state: 'MV', start: '2026-11-26', end: '2026-11-26' },
+    { state: 'MV', start: '2026-11-27', end: '2026-11-27' },
+    { state: 'MV', start: '2027-11-25', end: '2027-11-25' },
+    { state: 'MV', start: '2027-11-26', end: '2027-11-26' },
+  ],
+  add: [],
+};
+for (const r of OVERRIDES.remove) out[r.state] = out[r.state].filter((p) => !(p.start === r.start && p.end === r.end));
+for (const a of OVERRIDES.add) out[a.state].push({ start: a.start, end: a.end, name: a.name });
+
 for (const s of STATES) {
   out[s].sort((a, b) => a.start.localeCompare(b.start));
   if (!out[s].length) throw new Error(`No school holidays for ${s}`);

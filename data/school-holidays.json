@@ -1,9 +1,9 @@
 {
  "meta": {
   "source": "OpenHolidays API (openholidaysapi.org), ODbL",
-  "fetchedAt": "2026-11-10",
+  "fetchedAt": "2026-11-13",
   "from": "2026-10-01",
-  "to": "2028-03-31"
+  "to": "2028-07-31"
  },
  "states": {
   "BW": [
@@ -51,6 +51,26 @@
     "start": "2027-12-23",
     "end": "2028-01-08",
     "name": "Weihnachtsferien"
+   },
+   {
+    "start": "2028-04-13",
+    "end": "2028-04-13",
+    "name": "Gründonnerstag"
+   },
+   {
+    "start": "2028-04-18",
+    "end": "2028-04-22",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-06-06",
+    "end": "2028-06-17",
+    "name": "Pfingstferien"
+   },
+   {
+    "start": "2028-07-27",
+    "end": "2028-09-09",
+    "name": "Sommerferien"
    }
   ],
   "BY": [
@@ -108,6 +128,21 @@
     "start": "2028-02-28",
     "end": "2028-03-03",
     "name": "Frühjahrsferien"
+   },
+   {
+    "start": "2028-04-10",
+    "end": "2028-04-21",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-06-06",
+    "end": "2028-06-16",
+    "name": "Pfingstferien"
+   },
+   {
+    "start": "2028-07-31",
+    "end": "2028-09-11",
+    "name": "Sommerferien"
    }
   ],
   "BE": [
@@ -160,6 +195,26 @@
     "start": "2028-01-31",
     "end": "2028-02-05",
     "name": "Winterferien"
+   },
+   {
+    "start": "2028-04-10",
+    "end": "2028-04-22",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-05-26",
+    "end": "2028-05-26",
+    "name": "Unterrichtsfreier Tag"
+   },
+   {
+    "start": "2028-06-01",
+    "end": "2028-06-02",
+    "name": "Pfingstferien"
+   },
+   {
+    "start": "2028-07-01",
+    "end": "2028-08-12",
+    "name": "Sommerferien"
    }
   ],
   "BB": [
@@ -212,6 +267,21 @@
     "start": "2028-01-31",
     "end": "2028-02-05",
     "name": "Winterferien"
+   },
+   {
+    "start": "2028-04-10",
+    "end": "2028-04-22",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-05-26",
+    "end": "2028-05-26",
+    "name": "Variabler Ferientag"
+   },
+   {
+    "start": "2028-06-29",
+    "end": "2028-08-12",
+    "name": "Sommerferien"
    }
   ],
   "HB": [
@@ -264,6 +334,26 @@
     "start": "2028-01-31",
     "end": "2028-02-01",
     "name": "Halbjahresferien"
+   },
+   {
+    "start": "2028-04-10",
+    "end": "2028-04-22",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-05-26",
+    "end": "2028-05-26",
+    "name": "Tag nach Himmelfahrt"
+   },
+   {
+    "start": "2028-06-06",
+    "end": "2028-06-06",
+    "name": "Pfingstferien"
+   },
+   {
+    "start": "2028-07-20",
+    "end": "2028-08-30",
+    "name": "Sommerferien"
    }
   ],
   "HH": [
@@ -316,6 +406,16 @@
     "start": "2028-03-06",
     "end": "2028-03-17",
     "name": "Frühjahrsferien"
+   },
+   {
+    "start": "2028-05-22",
+    "end": "2028-05-26",
+    "name": "Pfingstferien"
+   },
+   {
+    "start": "2028-07-03",
+    "end": "2028-08-11",
+    "name": "Sommerferien"
    }
   ],
   "HE": [
@@ -348,6 +448,16 @@
     "start": "2027-12-23",
     "end": "2028-01-11",
     "name": "Weihnachtsferien"
+   },
+   {
+    "start": "2028-04-03",
+    "end": "2028-04-14",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-07-03",
+    "end": "2028-08-11",
+    "name": "Sommerferien"
    }
   ],
   "MV": [
@@ -355,16 +465,6 @@
     "start": "2026-10-15",
     "end": "2026-10-24",
     "name": "Herbstferien"
-   },
-   {
-    "start": "2026-11-26",
-    "end": "2026-11-26",
-    "name": "Zusätzlicher Ferientag"
-   },
-   {
-    "start": "2026-11-27",
-    "end": "2026-11-27",
-    "name": "Zusätzlicher Ferientag"
    },
    {
     "start": "2026-12-21",
@@ -402,16 +502,6 @@
     "name": "Herbstferien"
    },
    {
-    "start": "2027-11-25",
-    "end": "2027-11-25",
-    "name": "Zusätzlicher Ferientag"
-   },
-   {
-    "start": "2027-11-26",
-    "end": "2027-11-26",
-    "name": "Zusätzlicher Ferientag"
-   },
-   {
     "start": "2027-12-22",
     "end": "2028-01-04",
     "name": "Weihnachtsferien"
@@ -425,6 +515,26 @@
     "start": "2028-02-18",
     "end": "2028-02-18",
     "name": "Schulfrei"
+   },
+   {
+    "start": "2028-04-12",
+    "end": "2028-04-21",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-05-26",
+    "end": "2028-05-26",
+    "name": "Zusätzlicher Ferientag"
+   },
+   {
+    "start": "2028-06-02",
+    "end": "2028-06-06",
+    "name": "Pfingstferien"
+   },
+   {
+    "start": "2028-06-26",
+    "end": "2028-08-05",
+    "name": "Sommerferien"
    }
   ],
   "NI": [
@@ -477,6 +587,26 @@
     "start": "2028-01-31",
     "end": "2028-02-01",
     "name": "Halbjahresferien"
+   },
+   {
+    "start": "2028-04-10",
+    "end": "2028-04-22",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-05-26",
+    "end": "2028-05-26",
+    "name": "Tag nach Himmelfahrt"
+   },
+   {
+    "start": "2028-06-06",
+    "end": "2028-06-06",
+    "name": "Pfingstferien"
+   },
+   {
+    "start": "2028-07-20",
+    "end": "2028-08-30",
+    "name": "Sommerferien"
    }
   ],
   "NW": [
@@ -514,6 +644,16 @@
     "start": "2027-12-24",
     "end": "2028-01-08",
     "name": "Weihnachtsferien"
+   },
+   {
+    "start": "2028-04-10",
+    "end": "2028-04-22",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-07-10",
+    "end": "2028-08-22",
+    "name": "Sommerferien"
    }
   ],
   "RP": [
@@ -546,6 +686,16 @@
     "start": "2027-12-23",
     "end": "2028-01-07",
     "name": "Weihnachtsferien"
+   },
+   {
+    "start": "2028-04-10",
+    "end": "2028-04-21",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-07-03",
+    "end": "2028-08-11",
+    "name": "Sommerferien"
    }
   ],
   "SL": [
@@ -588,6 +738,16 @@
     "start": "2028-02-21",
     "end": "2028-02-29",
     "name": "Fastnachtsferien"
+   },
+   {
+    "start": "2028-04-12",
+    "end": "2028-04-21",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-07-03",
+    "end": "2028-08-11",
+    "name": "Sommerferien"
    }
   ],
   "SN": [
@@ -640,6 +800,21 @@
     "start": "2028-02-14",
     "end": "2028-02-26",
     "name": "Winterferien"
+   },
+   {
+    "start": "2028-04-14",
+    "end": "2028-04-22",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-05-26",
+    "end": "2028-05-26",
+    "name": "Unterrichtsfreier Tag"
+   },
+   {
+    "start": "2028-07-22",
+    "end": "2028-09-01",
+    "name": "Sommerferien"
    }
   ],
   "ST": [
@@ -687,6 +862,21 @@
     "start": "2028-02-07",
     "end": "2028-02-12",
     "name": "Winterferien"
+   },
+   {
+    "start": "2028-04-10",
+    "end": "2028-04-22",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-06-03",
+    "end": "2028-06-10",
+    "name": "Pfingstferien"
+   },
+   {
+    "start": "2028-07-22",
+    "end": "2028-09-01",
+    "name": "Sommerferien"
    }
   ],
   "SH": [
@@ -724,6 +914,21 @@
     "start": "2027-12-23",
     "end": "2028-01-08",
     "name": "Weihnachtsferien"
+   },
+   {
+    "start": "2028-04-03",
+    "end": "2028-04-15",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-05-26",
+    "end": "2028-05-26",
+    "name": "Himmelfahrt"
+   },
+   {
+    "start": "2028-06-24",
+    "end": "2028-08-04",
+    "name": "Sommerferien"
    }
   ],
   "TH": [
@@ -771,6 +976,21 @@
     "start": "2028-02-07",
     "end": "2028-02-12",
     "name": "Winterferien"
+   },
+   {
+    "start": "2028-04-03",
+    "end": "2028-04-15",
+    "name": "Osterferien"
+   },
+   {
+    "start": "2028-05-26",
+    "end": "2028-05-26",
+    "name": "Schulfreier Tag"
+   },
+   {
+    "start": "2028-07-22",
+    "end": "2028-09-01",
+    "name": "Sommerferien"
    }
   ]
  }

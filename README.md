@@ -11,7 +11,8 @@ One Next.js app (TypeScript), one SQLite file, no other services to run.
 - **Calendars**: public holidays (computed per Bundesland, tested against OpenHolidays) and school holidays (snapshot in `data/`, refresh with `npm run holidays`) are built in. Customers can add a football club's fixtures (OpenLigaDB), any public iCal address, and their own dates.
 - **Design assistant** (`src/lib/ai.ts`): the customer writes what they want, optionally with a photo; Claude returns a new design spec, the engine draws it. The assistant cannot change dates or print geometry. The same module reads birthdays from a photographed calendar; the customer corrects the list before ordering.
 - **Orders** (`src/lib/orders.ts`): an order stores a snapshot of the spec. Stripe Checkout takes the payment and sends the invoice; the webhook marks the order paid. Vouchers are codes with a balance.
-- **Admin** (`/admin`): paid orders, print PDF download, status and tracking number (sends the shipping mail). Print-partner integration comes later; for now you upload the PDF to the partner by hand.
+- **Admin** (`/admin`): paid orders, print PDF download, status and tracking number (sends the shipping mail).
+- **Print partner** (`src/lib/posterflow.ts`, `src/lib/print-partner.ts`): with `POSTERFLOW_API_KEY` set, each new paid order has an "An Posterflow senden" button. The shop sends name, address, email and a signed, expiring link to the print PDF (`/api/print/...`, rendered on request, never stored). Before every send it asks Posterflow whether the order number is already there, so an order is never printed twice. Status comes from Posterflow's callback (`/api/posterflow/webhook`) and from a check every six hours or on "Status aktualisieren"; when Posterflow reports the parcel shipped, the order becomes "Versandt" and the customer gets the usual shipping mail. Without the key, nothing changes: download the PDF and upload it by hand. Setup and open questions: `docs/posterflow.md`.
 
 ## Run it locally
 
@@ -54,7 +55,7 @@ docker compose up -d --build
 Caddy fetches the TLS certificate on its own. To update later: `git pull && docker compose up -d --build`.
 
 4. In Stripe, add a webhook endpoint `https://plana-planer.de/api/stripe/webhook` with the events `checkout.session.completed` and `checkout.session.async_payment_succeeded`, and put its signing secret into `.env`. Switch on PayPal, Klarna and SEPA under Settings › Payment methods.
-5. Back up the `var/` folder (orders and vouchers) every night to somewhere off the server.
+5. Back up the order database every night: see `docs/backup.md`.
 
 ## Automatic deployment
 
