@@ -83,7 +83,7 @@ type Frame = {
   dir: 'h' | 'v';
   cells: Cell[];
   thin: Seg[];
-  /** Month-start lines as centre lines; drawn thin when the design has no month line. There is no frame. */
+  /** Month lines as centre lines; drawn thin when the design has no month line */
   thick: Seg[];
   /**
    * The same lines as bars [x, y, w, h] of the month line's width. A bar never straddles
@@ -356,13 +356,35 @@ function frameWochen({ spec, days, body, labelFace, labelLs }: Ctx): Frame {
   for (let c = 1; c < COLS; c++) thin.push([g.x + c * cw, g.y, g.x + c * cw, g.y + g.h]);
   for (let r = 1; r < ROWS; r++) thin.push([g.x, g.y + r * rh, g.x + g.w, g.y + r * rh]);
 
-  // A thick edge wherever two neighbouring cells belong to different months. There is no
-  // frame around the sheet: thick lines appear only where a month starts.
+  // Thick lines mark months. They run wherever two neighbouring cells belong to different
+  // months, along the top and the bottom of the sheet (the start of the first month and the
+  // end of the last one), and at the left or right edge of a row where a month starts or ends.
+  // The rest of the left and right edge is a thin line like the grid.
   const thick: Seg[] = [];
   const lw = spec.design.lines.month;
   const right = g.x + g.w;
   const bars: Seg[] = [];
+  const startsRow = (r: number) => days[r * COLS].d === 1;
+  const endsRow = (r: number) => r * COLS + COLS < days.length && days[r * COLS + COLS].d === 1;
+  for (let r = 0; r < ROWS; r++) {
+    if (!(lw > 0 && startsRow(r))) thin.push([g.x, g.y + r * rh, g.x, g.y + (r + 1) * rh]);
+    if (!(lw > 0 && endsRow(r))) thin.push([right, g.y + r * rh, right, g.y + (r + 1) * rh]);
+  }
+  if (lw <= 0) thin.push([g.x, g.y, right, g.y], [g.x, g.y + g.h, right, g.y + g.h]);
   if (spec.design.lines.month > 0) {
+    // The top bar hangs inside the first row, the bottom bar stands inside the last row.
+    thick.push([g.x, g.y, right, g.y], [g.x, g.y + g.h, right, g.y + g.h]);
+    bars.push([g.x, g.y, g.w, lw], [g.x, g.y + g.h - lw, g.w, lw]);
+    for (let r = 0; r < ROWS; r++) {
+      if (startsRow(r)) {
+        thick.push([g.x, g.y + r * rh, g.x, g.y + (r + 1) * rh]);
+        bars.push([g.x, g.y + r * rh, lw, rh]);
+      }
+      if (endsRow(r)) {
+        thick.push([right, g.y + r * rh, right, g.y + (r + 1) * rh]);
+        bars.push([right - lw, g.y + r * rh, lw, rh]);
+      }
+    }
     for (let r = 1; r < ROWS; r++) {
       let run = -1;
       for (let c = 0; c <= COLS; c++) {
