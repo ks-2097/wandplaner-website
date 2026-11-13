@@ -1,0 +1,8 @@
+{
+  "poppins": { "css": "Poppins", "label": "Poppins", "kind": "Grotesk", "fontsource": "poppins", "roles": ["title", "body"], "files": { "400": "Poppins-Regular.ttf", "500": "Poppins-Medium.ttf", "600": "Poppins-SemiBold.ttf", "700": "Poppins-Bold.ttf" } },
+  "dmserif": { "css": "DM Serif Display", "label": "DM Serif Display", "kind": "Serif", "fontsource": "dm-serif-display", "roles": ["title"], "files": { "400": "DMSerifDisplay-Regular.ttf" } },
+  "abril": { "css": "Abril Fatface", "label": "Abril Fatface", "kind": "Fette Serif", "fontsource": "abril-fatface", "roles": ["title"], "files": { "400": "AbrilFatface-Regular.ttf" } },
+  "archivo": { "css": "Archivo Black", "label": "Archivo Black", "kind": "Schwere Grotesk", "fontsource": "archivo-black", "roles": ["title"], "files": { "400": "ArchivoBlack-Regular.ttf" } },
+  "spacemono": { "css": "Space Mono", "label": "Space Mono", "kind": "Schreibmaschine", "fontsource": "space-mono", "roles": ["title", "body"], "files": { "400": "SpaceMono-Regular.ttf", "700": "SpaceMono-Bold.ttf" } },
+  "gloria": { "css": "Gloria Hallelujah", "label": "Gloria Hallelujah", "kind": "Handschrift", "fontsource": "gloria-hallelujah", "roles": ["title"], "files": { "400": "GloriaHallelujah.ttf" } }
+}

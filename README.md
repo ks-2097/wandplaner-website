@@ -1,25 +1,98 @@
-# Plana Studio: launching-soon website
+# plana studio
 
-A static page (no build step) for `plana-planer.de` with a waiting-list signup, plus Impressum and Datenschutz. Styled with the Plana Studio design system; Poppins is self-hosted, so no data goes to Google.
+The shop for `plana-planer.de`: a configurator for personalised wall planners (70 × 100 cm), checkout with Stripe, gift vouchers, and an admin page with the print file of every order.
 
-## Files
+One Next.js app (TypeScript), one SQLite file, no other services to run.
 
-- `index.html`: the page
-- `impressum.html`, `datenschutz.html`: legal pages with `[placeholders]` to fill in
-- `assets/styles.css`: tokens and styles
-- `assets/fonts/`: Poppins 400–700 (latin subset, SIL OFL)
-- `assets/img/`: planner images (WebP + JPG) and `og.jpg` for link previews
+## How it fits together
 
-## Before going live
+- **Layout engine** (`src/planner/`): a design spec (layout, colours, fonts, title, calendars, birthdays) plus the dates become a list of drawing primitives. The on-screen preview (SVG) and the print file (PDF, 3 mm bleed, fonts embedded) are both rendered from that list, so the customer signs off exactly what is printed.
+- **Three base layouts**: `wochen` (13 rows × 4 weeks, the original), `zeilen` (12 month rows, landscape), `spalten` (12 month columns, portrait).
+- **Calendars**: public holidays (computed per Bundesland, tested against OpenHolidays) and school holidays (snapshot in `data/`, refresh with `npm run holidays`) are built in. Customers can add a football club's fixtures (OpenLigaDB), any public iCal address, and their own dates.
+- **Design assistant** (`src/lib/ai.ts`): the customer writes what they want, optionally with a photo; Claude returns a new design spec, the engine draws it. The assistant cannot change dates or print geometry. The same module reads birthdays from a photographed calendar; the customer corrects the list before ordering.
+- **Orders** (`src/lib/orders.ts`): an order stores a snapshot of the spec. Stripe Checkout takes the payment and sends the invoice; the webhook marks the order paid. Vouchers are codes with a balance.
+- **Admin** (`/admin`): paid orders, print PDF download, status and tracking number (sends the shipping mail). Print-partner integration comes later; for now you upload the PDF to the partner by hand.
 
-1. Fill in every `[placeholder]` in `impressum.html` and `datenschutz.html`. Replace the privacy text with one from your legal-text service, or have it checked.
-2. Connect the waiting list. In Brevo (free plan), create a contact attribute `BUNDESLAND` (text) and a signup form with double opt-in. Copy the form's action URL and paste it into `data-endpoint=""` on the `<form id="signup">` in `index.html`. Until then the button shows "Die Anmeldung öffnet in Kürze."
-3. Upload the folder to any static host (the planned VPS with Caddy or nginx, or a free static host) and point `plana-planer.de` at it.
-
-## Preview locally
+## Run it locally
 
 ```bash
-python3 -m http.server 8000
+npm install
 ```
 
-Then open http://localhost:8000.
+```bash
+cp .env.example .env
+```
+
+```bash
+npm run dev
+```
+
+Open http://localhost:3000. Without keys the configurator works; set `SHOP_OPEN=true`, `ADMIN_PASSWORD` and the Stripe test keys to try an order. Mails are printed to the console until `SMTP_URL` is set.
+
+```bash
+npm test
+```
+
+## Put it online
+
+1. Rent a small VPS in Germany (2 vCPU, 4 GB RAM is plenty) with Ubuntu 24.04 and install Docker.
+2. At IONOS, point the domain to the server: an `A` record for `plana-planer.de` and one for `www`, both to the server's IPv4 address (and `AAAA` for IPv6 if you have one).
+3. On the server:
+
+```bash
+git clone https://github.com/ks-2097/wandplaner-website.git && cd wandplaner-website
+```
+
+```bash
+cp .env.example .env && nano .env
+```
+
+```bash
+docker compose up -d --build
+```
+
+Caddy fetches the TLS certificate on its own. To update later: `git pull && docker compose up -d --build`.
+
+4. In Stripe, add a webhook endpoint `https://plana-planer.de/api/stripe/webhook` with the events `checkout.session.completed` and `checkout.session.async_payment_succeeded`, and put its signing secret into `.env`. Switch on PayPal, Klarna and SEPA under Settings › Payment methods.
+5. Back up the `var/` folder (orders and vouchers) every night to somewhere off the server.
+
+## Automatic deployment
+
+A push to `main` runs the tests; if they pass, GitHub logs in to the server and runs `scripts/deploy.sh`: it pulls `main`, rebuilds, waits for the site to answer, and rolls back to the previous version if it doesn't. The deploy key can run only that script.
+
+One-time setup:
+
+1. On your PC, create a key used only for deploying (no passphrase, so GitHub can use it):
+
+```powershell
+ssh-keygen -t ed25519 -f $env:USERPROFILE\.ssh\plana_github_deploy -N '""' -C github-deploy
+```
+
+2. On the server, make `main` the branch it follows, then allow the key to run only the deploy script (replace `<PUBLIC KEY>` with the contents of `plana_github_deploy.pub`):
+
+```bash
+cd ~/wandplaner-website && git fetch origin main && git checkout -B main origin/main
+```
+
+```bash
+echo 'command="/root/wandplaner-website/scripts/deploy.sh",no-port-forwarding,no-agent-forwarding,no-X11-forwarding,no-pty <PUBLIC KEY>' >> ~/.ssh/authorized_keys
+```
+
+3. In the repository on GitHub, under Settings > Environments, create an environment named `production`. Under Settings > Secrets and variables > Actions, add three secrets to it:
+   - `DEPLOY_SSH_KEY`: the content of the private key file `plana_github_deploy`
+   - `DEPLOY_HOST`: `87.106.28.141`
+   - `DEPLOY_KNOWN_HOSTS`: the output of `ssh-keyscan -t ed25519 87.106.28.141`
+4. Under Settings > Branches, protect `main`: require a pull request and the `test` check before merging.
+
+After that, merging a pull request deploys it. The "Actions" tab shows the log of every deploy, and "Run workflow" on the CI workflow starts one by hand.
+
+## Before the first sale
+
+- Fill in every marked placeholder in Impressum, Datenschutz, AGB, Widerruf and Versand, with texts from a legal-text service.
+- Check the school holidays in `data/school-holidays.json` against the official tables; they come from OpenHolidays.
+- Order one test print of each layout from the PDF in `/admin`.
+- Set `SHOP_OPEN=true`.
+
+## Licences
+
+Fonts in `src/planner/fonts` and `public/fonts`: SIL Open Font License. Holiday data: OpenHolidays API, ODbL. Fixtures: OpenLigaDB, ODbL.

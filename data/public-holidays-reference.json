@@ -1,0 +1,437 @@
+{
+ "meta": {
+  "source": "OpenHolidays API (openholidaysapi.org), ODbL",
+  "fetchedAt": "2026-11-10",
+  "from": "2026-10-01",
+  "to": "2028-03-31"
+ },
+ "holidays": [
+  {
+   "date": "2026-10-03",
+   "name": "Tag der Deutschen Einheit",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2026-10-31",
+   "name": "Reformationstag",
+   "states": [
+    "SH",
+    "ST",
+    "HH",
+    "HB",
+    "TH",
+    "MV",
+    "SN",
+    "NI",
+    "BB"
+   ]
+  },
+  {
+   "date": "2026-11-01",
+   "name": "Allerheiligen",
+   "states": [
+    "SL",
+    "NW",
+    "BW",
+    "RP",
+    "BY"
+   ]
+  },
+  {
+   "date": "2026-11-18",
+   "name": "Buß- und Bettag",
+   "states": [
+    "SN"
+   ]
+  },
+  {
+   "date": "2026-12-25",
+   "name": "1. Weihnachtsfeiertag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2026-12-26",
+   "name": "2. Weihnachtsfeiertag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-01-01",
+   "name": "Neujahr",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-01-06",
+   "name": "Heilige Drei Könige",
+   "states": [
+    "ST",
+    "BW",
+    "BY"
+   ]
+  },
+  {
+   "date": "2027-03-08",
+   "name": "Internationaler Frauentag",
+   "states": [
+    "BE",
+    "MV"
+   ]
+  },
+  {
+   "date": "2027-03-26",
+   "name": "Karfreitag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-03-28",
+   "name": "Ostersonntag",
+   "states": [
+    "BB"
+   ]
+  },
+  {
+   "date": "2027-03-29",
+   "name": "Ostermontag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-05-01",
+   "name": "Tag der Arbeit",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-05-06",
+   "name": "Christi Himmelfahrt",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-05-16",
+   "name": "Pfingstsonntag",
+   "states": [
+    "BB"
+   ]
+  },
+  {
+   "date": "2027-05-17",
+   "name": "Pfingstmontag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-05-27",
+   "name": "Fronleichnam",
+   "states": [
+    "HE",
+    "SL",
+    "NW",
+    "BW",
+    "RP",
+    "BY"
+   ]
+  },
+  {
+   "date": "2027-08-15",
+   "name": "Mariä Himmelfahrt",
+   "states": [
+    "SL",
+    "BY"
+   ]
+  },
+  {
+   "date": "2027-09-20",
+   "name": "Weltkindertag",
+   "states": [
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-10-03",
+   "name": "Tag der Deutschen Einheit",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-10-31",
+   "name": "Reformationstag",
+   "states": [
+    "SH",
+    "ST",
+    "HH",
+    "HB",
+    "TH",
+    "MV",
+    "SN",
+    "NI",
+    "BB"
+   ]
+  },
+  {
+   "date": "2027-11-01",
+   "name": "Allerheiligen",
+   "states": [
+    "SL",
+    "NW",
+    "BW",
+    "RP",
+    "BY"
+   ]
+  },
+  {
+   "date": "2027-11-17",
+   "name": "Buß- und Bettag",
+   "states": [
+    "SN"
+   ]
+  },
+  {
+   "date": "2027-12-25",
+   "name": "1. Weihnachtsfeiertag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2027-12-26",
+   "name": "2. Weihnachtsfeiertag",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2028-01-01",
+   "name": "Neujahr",
+   "states": [
+    "BW",
+    "BY",
+    "BE",
+    "BB",
+    "HB",
+    "HH",
+    "HE",
+    "MV",
+    "NI",
+    "NW",
+    "RP",
+    "SL",
+    "SN",
+    "ST",
+    "SH",
+    "TH"
+   ]
+  },
+  {
+   "date": "2028-01-06",
+   "name": "Heilige Drei Könige",
+   "states": [
+    "ST",
+    "BW",
+    "BY"
+   ]
+  },
+  {
+   "date": "2028-03-08",
+   "name": "Internationaler Frauentag",
+   "states": [
+    "BE",
+    "MV"
+   ]
+  }
+ ]
+}
