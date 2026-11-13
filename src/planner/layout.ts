@@ -83,7 +83,15 @@ type Frame = {
   dir: 'h' | 'v';
   cells: Cell[];
   thin: Seg[];
+  /** Month lines and frame as centre lines; drawn thin when the design has no month line */
   thick: Seg[];
+  /**
+   * The same lines as bars [x, y, w, h] of the month line's width. A bar never straddles
+   * a grid line: a horizontal one hangs below it, inside the top of the cells it opens,
+   * and a vertical one stands to its right, inside the left edge of the month's first cell.
+   * The closing edges of the sheet (bottom, right) sit inside the grid too.
+   */
+  bars: Seg[];
   /** Month names, weekday headers and other fixed lettering */
   extras: Prim[];
   /** Where things sit inside a cell, relative to its top-left corner */
@@ -141,7 +149,7 @@ export function buildScene(spec: PlannerSpec): Scene {
 
   // ---- Grid and month lines
   prims.push({ k: 'lines', segs: frame.thin, stroke: ink, w: d.lines.grid, o: d.lines.gridOpacity, cap: 'butt' });
-  if (d.lines.month > 0) prims.push({ k: 'lines', segs: frame.thick, stroke: accent, w: d.lines.month, cap: 'square' });
+  if (d.lines.month > 0) for (const [x, y, w, h] of frame.bars) prims.push({ k: 'rect', x: round(x), y: round(y), w: round(w), h: round(h), fill: accent });
   else prims.push({ k: 'lines', segs: frame.thick, stroke: ink, w: d.lines.grid, o: d.lines.gridOpacity, cap: 'square' });
 
   // ---- Title
@@ -293,8 +301,9 @@ export function buildScene(spec: PlannerSpec): Scene {
         const x1 = last.x + last.w - (endsHere ? M.tripInset : 0);
         const label = truncate(p.label, labelFace, labelSize, labelLs, Math.max(x1 - x0 - 1, first.w - 2 * M.padX));
         if (d.schoolHolidays === 'band') {
-          prims.push({ k: 'rect', x: first.x, y: top + h - 2.6, w: last.x + last.w - first.x, h: 2.2, fill: accent, o: 0.32 });
-          prims.push({ k: 'text', x: (first.x + last.x + last.w) / 2, y: top + h - 3.8, s: label, face: labelFace, size: labelSize, fill: accent, anchor: 'middle', ls: labelLs });
+          // The band ends exactly on the grid line, so it meets the month line below without a gap.
+          prims.push({ k: 'rect', x: first.x, y: top + h - 2.2, w: last.x + last.w - first.x, h: 2.2, fill: accent, o: 0.32 });
+          prims.push({ k: 'text', x: (first.x + last.x + last.w) / 2, y: top + h - 3.4, s: label, face: labelFace, size: labelSize, fill: accent, anchor: 'middle', ls: labelLs });
         } else if (d.schoolHolidays === 'underline' && school.some((s) => s.start === p.start && s.end === p.end && s.label === p.label)) {
           prims.push({ k: 'text', x: first.x + M.padX, y: top + h - 5, s: truncate(p.label, labelFace, labelSize, labelLs, last.x + last.w - first.x - 2 * M.padX), face: labelFace, size: labelSize, fill: accent, ls: labelLs });
         } else {
@@ -306,7 +315,8 @@ export function buildScene(spec: PlannerSpec): Scene {
         }
       } else {
         // Days run downwards: the line runs down the right side of the cells.
-        const lx = first.x + first.w - 3.2 - off;
+        // The band stands flush against the right edge of its cells; the arrow line keeps its distance.
+        const lx = first.x + first.w - (d.schoolHolidays === 'band' ? 1.1 : 3.2) - off;
         const y0 = first.y + (startsHere ? M.tripInset : 0);
         const y1 = last.y + last.h - (endsHere ? M.tripInset : 0);
         const label = truncate(p.label, labelFace, labelSize, labelLs, first.w - frame.cell.labelX - 6 - off);
@@ -353,6 +363,14 @@ function frameWochen({ spec, days, body, labelFace, labelLs }: Ctx): Frame {
     [g.x, g.y, g.x, g.y + g.h],
     [g.x + g.w, g.y, g.x + g.w, g.y + g.h],
   ];
+  const lw = spec.design.lines.month;
+  const right = g.x + g.w;
+  const bars: Seg[] = [
+    [g.x, g.y, g.w, lw],
+    [g.x, g.y + g.h - lw, g.w, lw],
+    [g.x, g.y, lw, g.h],
+    [right - lw, g.y, lw, g.h],
+  ];
   if (spec.design.lines.month > 0) {
     for (let r = 1; r < ROWS; r++) {
       let run = -1;
@@ -361,12 +379,18 @@ function frameWochen({ spec, days, body, labelFace, labelLs }: Ctx): Frame {
         if (differs && run < 0) run = c;
         if (!differs && run >= 0) {
           thick.push([g.x + run * cw, g.y + r * rh, g.x + c * cw, g.y + r * rh]);
+          // Runs on by one line width so it closes the corner with the vertical bar it meets.
+          bars.push([g.x + run * cw, g.y + r * rh, Math.min(g.x + c * cw + lw, right) - (g.x + run * cw), lw]);
           run = -1;
         }
       }
     }
     for (let r = 0; r < ROWS; r++)
-      for (let c = 1; c < COLS; c++) if (days[r * COLS + c - 1].m !== days[r * COLS + c].m) thick.push([g.x + c * cw, g.y + r * rh, g.x + c * cw, g.y + (r + 1) * rh]);
+      for (let c = 1; c < COLS; c++)
+        if (days[r * COLS + c - 1].m !== days[r * COLS + c].m) {
+          thick.push([g.x + c * cw, g.y + r * rh, g.x + c * cw, g.y + (r + 1) * rh]);
+          bars.push([g.x + c * cw, g.y + r * rh, lw, rh]);
+        }
   }
 
   const extras: Prim[] = [];
@@ -374,7 +398,7 @@ function frameWochen({ spec, days, body, labelFace, labelLs }: Ctx): Frame {
     for (let c = 0; c < COLS; c++) extras.push({ k: 'text', x: g.x + c * cw + M.padX - 0.3, y: 72.9, s: WEEKDAYS_DE[days[c].wd], face: labelFace, size: 2.6, fill: ink, o: 0.65, ls: labelLs });
   void body;
 
-  return { sheet, dayCount: 364, dir: 'h', cells, thin, thick, extras, cell: { labelX: M.padX, labelBaseline: 11.5, maxLabels: 5, labelRight: M.padX, monthInCell: true } };
+  return { sheet, dayCount: 364, dir: 'h', cells, thin, thick, bars, extras, cell: { labelX: M.padX, labelBaseline: 11.5, maxLabels: 5, labelRight: M.padX, monthInCell: true } };
 }
 
 // ---------------------------------------------------------------------------------------
@@ -393,6 +417,8 @@ function frameZeilen({ spec, days, body, labelLs }: Ctx): Frame {
   const cells: Cell[] = [];
   const thin: Seg[] = [];
   const thick: Seg[] = [[g.x, g.y, g.x, g.y + g.h]];
+  const lw = spec.design.lines.month;
+  const bars: Seg[] = [[g.x, g.y, lw, g.h]];
   const extras: Prim[] = [];
 
   months.forEach((mo, r) => {
@@ -405,13 +431,15 @@ function frameZeilen({ spec, days, body, labelLs }: Ctx): Frame {
     thick.push([g.x, top, Math.max(right, prevRight), top]);
     thick.push([right, top, right, top + rh]);
     if (r === 11) thick.push([g.x, top + rh, right, top + rh]);
+    bars.push([g.x, top, Math.max(right, prevRight) - g.x, lw], [right - lw, top, lw, rh]);
+    if (r === 11) bars.push([g.x, top + rh - lw, right - g.x, lw]);
     extras.push({ k: 'text', x: g.x + M.padX, y: top + 6.4, s: MONTHS_DE[mo.m - 1].toLocaleUpperCase('de-DE'), face: body(700), size: 3.3, fill: accent, ls: 0.05 });
     if (mo.m === 1 || r === 0) extras.push({ k: 'text', x: g.x + M.padX, y: top + 11, s: String(mo.y), face: body(400), size: M.yearSize, fill: accent });
   });
   void labelLs;
 
   return {
-    sheet, dayCount: days.length, dir: 'h', cells, thin, thick, extras,
+    sheet, dayCount: days.length, dir: 'h', cells, thin, thick, bars, extras,
     cell: { labelX: M.padX, labelBaseline: 11.5, maxLabels: 6, labelRight: 1.6, weekday: spec.design.weekdays ? { x: cw - 1.8, y: 4.2 } : undefined, monthInCell: false },
   };
 }
@@ -432,6 +460,8 @@ function frameSpalten({ spec, days, body }: Ctx): Frame {
   const cells: Cell[] = [];
   const thin: Seg[] = [];
   const thick: Seg[] = [[g.x, g.y, g.x + g.w, g.y]];
+  const lw = spec.design.lines.month;
+  const bars: Seg[] = [[g.x, g.y, g.w, lw]];
   const extras: Prim[] = [];
 
   months.forEach((mo, c) => {
@@ -443,6 +473,8 @@ function frameSpalten({ spec, days, body }: Ctx): Frame {
     thick.push([left, g.y, left, Math.max(bottom, prevBottom)]);
     thick.push([left, bottom, left + cw, bottom]);
     if (c === 11) thick.push([left + cw, g.y, left + cw, bottom]);
+    bars.push([left, g.y, lw, Math.max(bottom, prevBottom) - g.y], [left, bottom - lw, cw, lw]);
+    if (c === 11) bars.push([left + cw - lw, g.y, lw, bottom - g.y]);
     const name = MONTHS_DE[mo.m - 1].toLocaleUpperCase('de-DE');
     const nameFace = body(700);
     extras.push({ k: 'text', x: left + M.padX, y: g.y + 6.6, s: name, face: nameFace, size: 3.3, fill: accent, ls: 0.05 });
@@ -450,7 +482,7 @@ function frameSpalten({ spec, days, body }: Ctx): Frame {
   });
 
   return {
-    sheet, dayCount: days.length, dir: 'v', cells, thin, thick, extras,
+    sheet, dayCount: days.length, dir: 'v', cells, thin, thick, bars, extras,
     cell: { labelX: 14, labelBaseline: 4.6, maxLabels: 7, labelRight: 5, weekday: spec.design.weekdays ? { x: M.padX, y: 11.2 } : undefined, monthInCell: false },
   };
 }

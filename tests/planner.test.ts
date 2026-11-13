@@ -112,6 +112,30 @@ describe('layout engine', () => {
     expect(header.slice(7, 14)).toEqual(header.slice(0, 7));
   });
 
+  it('keeps month lines inside the cells: below the top edge, right of the left edge', () => {
+    const spec = defaultSpec({ start: { year: 2027, month: 1 } });
+    const scene = buildScene(spec);
+    const w = spec.design.lines.month;
+    const bars = scene.prims.filter((p) => p.k === 'rect' && p.fill === spec.design.colors.accent && p.o === undefined);
+    const [gx, gy, cw, rh] = [32.5, 75.6, 935 / 28, 590 / 13];
+    // 1 February 2027 is day 31: row 1, column 3
+    const [x, y] = [gx + 3 * cw, gy + rh];
+    const near = (a: number, b: number) => Math.abs(a - b) < 0.01;
+    // the vertical bar starts exactly at the cell's left edge, the horizontal one at its top edge
+    expect(bars.some((b) => b.k === 'rect' && near(b.x, x) && near(b.y, y) && near(b.w, w) && near(b.h, rh))).toBe(true);
+    expect(bars.some((b) => b.k === 'rect' && near(b.x, x) && near(b.y, y) && near(b.h, w) && b.w > cw)).toBe(true);
+    // nothing sticks out of the grid
+    for (const layout of LAYOUTS) {
+      const s2 = buildScene(defaultSpec({ layout: layout.id }));
+      for (const b of s2.prims)
+        if (b.k === 'rect' && b.o === undefined) {
+          expect(b.x).toBeGreaterThanOrEqual(32.5 - 0.01);
+          expect(b.x + b.w).toBeLessThanOrEqual(s2.width - 32.5 + 0.01);
+          expect(b.y + b.h).toBeLessThanOrEqual(s2.height - 34.3);
+        }
+    }
+  });
+
   it('places birthdays, events and a second state', () => {
     const spec = defaultSpec({ start: { year: 2027, month: 1 } });
     spec.birthdays = [{ name: 'Oma Inge', day: 14, month: 3 }, { name: 'Schalttag', day: 29, month: 2 }];
