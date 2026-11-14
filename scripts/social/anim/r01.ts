@@ -90,82 +90,59 @@ const ITEMS: Item[] = [
   S('schwimm2', 5.45, 9, 3, ['Schwimm-', 'kurs'], 'graphite'),
   M('circle-lea', 5.75, 10, 3, 'circle', 'blue'),
   S('lea', 5.9, 10, 3, ['Lea 40'], 'blue'),
-  S('kuchen', 6.4, 14, 3, ['Kuchen'], 'red', 'low'),
-  { kind: 'arrow', id: 'arrow-kuchen', t: 6.68, date: [14, 3], to: 'OMA INGE', pen: 'red' },
+  S('kuchen', 6.5, 14, 3, ['Kuchen'], 'red', 'low'),
+  { kind: 'arrow', id: 'arrow-kuchen', t: 6.75, date: [14, 3], to: 'OMA INGE', pen: 'red' },
   // spring to summer
   S('kita', 6.85, 7, 5, ['Kita zu'], 'red'),
   S('muttertag', 7.05, 9, 5, ['Muttertag'], 'red'),
   M('heart-mutter', 7.3, 9, 5, 'heart', 'red', 'low'),
   S('hochzeit', 7.4, 5, 6, ['Hochzeit', 'Tim & Ana'], 'blue'),
-  S('sommerfest', 7.6, 4, 6, ['Sommerfest', '15:00'], 'graphite'),
-  S('zeugnisse', 7.8, 30, 6, ['Zeugnisse'], 'blue'),
+  S('sommerfest', 7.8, 4, 6, ['Sommerfest', '15:00'], 'graphite'),
+  S('zeugnisse', 7.58, 30, 6, ['Zeugnisse'], 'blue'),
   S('flug', 7.95, 3, 7, ['Flug 6:40'], 'red'),
   M('circle-flug', 8.15, 3, 7, 'circle', 'red'),
-  M('sun', 8.3, 4, 7, 'sun', 'red', 'top'),
-  S('ostsee', 8.45, 5, 7, ['Ostsee'], 'blue'),
+  M('sun', 8.3, 1, 7, 'sun', 'red', 'top'),
+  S('endlich', 8.55, 1, 7, ['endlich'], 'red'),
+  S('ostsee', 8.42, 4, 7, ['Ostsee'], 'blue'),
   S('rueckflug', 8.65, 29, 7, ['Rückflug'], 'blue'),
   // autumn
   S('elternabend', 8.85, 21, 9, ['Elternabend', '19:30'], 'blue'),
   S('geschenk', 9.05, 22, 9, ['Geschenk?'], 'graphite', 'low'),
   { kind: 'arrow', id: 'arrow-mila', t: 9.25, date: [22, 9], to: 'MILA', pen: 'graphite' },
-  S('umzug', 9.35, 25, 9, ['Umzug', 'Jan'], 'graphite'),
   S('reiterhof', 9.5, 20, 10, ['Reiterhof'], 'blue'),
   S('reifen', 9.65, 19, 10, ['Reifen', 'wechseln'], 'graphite'),
-  S('laterne', 9.8, 11, 11, ['Laternen-', 'fest'], 'red'),
-  S('markt', 9.95, 11, 12, ['Weihnachts-', 'markt'], 'red'),
-  S('feier', 10.1, 17, 12, ['Weihnachts-', 'feier'], 'graphite'),
-  // the pull-out: the whole year fills up
-  S('schulstart', -1, 16, 8, ['Schulstart'], 'blue'),
-  M('circle-schule', -1, 16, 8, 'circle', 'red'),
-  S('uhr', -1, 31, 10, ['Uhr', 'umstellen'], 'graphite'),
-  S('elternabend2', -1, 15, 9, ['Elternabend'], 'blue'),
-  S('ostereier', -1, 27, 3, ['Ostereier'], 'red'),
-  S('kino', -1, 15, 1, ['Kino'], 'blue'),
-  S('fasching', -1, 13, 2, ['Fasching'], 'red'),
-  S('fussball', -1, 23, 1, ['Fußball', '10:00'], 'graphite'),
-  S('opa', -1, 20, 2, ['Opa 70'], 'blue'),
-  M('circle-opa', -1, 20, 2, 'circle', 'blue'),
-  S('friseur', -1, 22, 4, ['Friseur', '16:00'], 'graphite'),
-  M('heart-jonas', -1, 1, 5, 'heart', 'red', 'low'),
-  S('grillen', -1, 26, 6, ['Grillen'], 'blue'),
-  S('flohmarkt', -1, 4, 9, ['Flohmarkt'], 'graphite'),
-  S('apfel', -1, 2, 10, ['Apfelernte'], 'red'),
-  S('advent', -1, 27, 11, ['Advents-', 'kranz'], 'graphite'),
-  S('stiefel', -1, 5, 12, ['Stiefel', 'putzen'], 'blue'),
-  M('heart-xmas', -1, 24, 12, 'heart', 'red', 'top'),
-  S('raclette', -1, 29, 12, ['Raclette'], 'blue'),
-  S('steuer', -1, 9, 4, ['Steuer'], 'graphite'),
-  M('tick-steuer', -1, 9, 4, 'tick', 'red', 'right'),
-  S('impfen', -1, 26, 5, ['Impfen', '8:15'], 'blue'),
-  S('schwimm4', -1, 23, 2, ['Schwimm-', 'kurs'], 'graphite'),
-  S('oma2', -1, 18, 9, ['Oma kommt'], 'blue'),
-  S('zahnarzt2', -1, 10, 11, ['Zahnarzt', '9:30'], 'blue'),
-  S('schwimm3', -1, 16, 3, ['Schwimm-', 'kurs'], 'graphite'),
-  S('ostsee2', -1, 22, 7, ['Ostsee'], 'blue'),
-  S('fussball2', -1, 6, 2, ['Fußball'], 'graphite'),
-  M('heart-valentin', -1, 14, 2, 'heart', 'red', 'top'),
-  S('klavier', -1, 18, 2, ['Klavier', '16:00'], 'blue'),
-  S('garten', -1, 24, 4, ['Garten'], 'graphite'),
-  S('laufen', -1, 25, 4, ['Laufen'], 'blue'),
-  S('laufen2', -1, 30, 5, ['Laufen'], 'blue'),
+  S('laterne', 9.95, 11, 11, ['Laternen-', 'fest'], 'red'),
+  S('markt', 10.12, 11, 12, ['Weihnachts-', 'markt'], 'red'),
+  S('feier', 10.28, 10, 12, ['Weihnachts-', 'feier'], 'graphite'),
+  // the pull-back: June to October fills up (timed automatically, see "pull-back notes")
   S('oma75', -1, 2, 6, ['Oma 75'], 'red'),
   M('circle-oma75', -1, 2, 6, 'circle', 'red'),
-  S('pass', -1, 8, 6, ['Pass', 'abholen'], 'graphite'),
-  S('zoo', -1, 13, 6, ['Zoo'], 'blue'),
   S('packen', -1, 2, 7, ['Packen'], 'blue'),
-  S('mama', -1, 3, 8, ['Mama 45'], 'red'),
-  M('circle-mama', -1, 3, 8, 'circle', 'red'),
-  S('zelten', -1, 14, 8, ['Zelten'], 'graphite'),
-  S('fussball3', -1, 11, 9, ['Fußball'], 'graphite'),
-  S('brunch', -1, 12, 9, ['Brunch'], 'red'),
-  S('kino2', -1, 8, 10, ['Kino'], 'blue'),
-  S('tierarzt', -1, 12, 10, ['Tierarzt'], 'graphite'),
-  S('spiele', -1, 22, 10, ['Spiele-', 'abend'], 'blue'),
-  S('konzert', -1, 19, 11, ['Konzert'], 'red'),
-  S('klavier2', -1, 25, 11, ['Klavier', '16:00'], 'blue'),
-  S('plaetzchen', -1, 4, 12, ['Plätzchen'], 'red'),
-  S('baum', -1, 18, 12, ['Tannen-', 'baum'], 'graphite'),
-  M('tick-pass', -1, 8, 6, 'tick', 'red', 'right'),
+  S('umzug', -1, 25, 9, ['Umzug', 'Jan'], 'graphite'),
+  S('friseur', -1, 31, 5, ['Friseur', '16:00'], 'graphite'),
+  S('turnen1', -1, 1, 6, ['Turnen', '16:00'], 'graphite'),
+  S('fotos', -1, 3, 6, ['Kita-', 'Fotos'], 'blue'),
+  S('lauf', -1, 6, 6, ['Lauf', '10 km'], 'blue'),
+  S('arzt', -1, 28, 6, ['Arzt 8:20'], 'graphite'),
+  S('wandertag', -1, 29, 6, ['Wander-', 'tag'], 'blue'),
+  S('camping', -1, 26, 7, ['Camping'], 'blue'),
+  S('oma-kinder', -1, 27, 7, ['Kinder', 'bei Oma'], 'graphite'),
+  S('pizza', -1, 30, 7, ['Pizza'], 'red'),
+  S('steuer', -1, 31, 7, ['Steuer?'], 'graphite'),
+  S('fahrrad', -1, 23, 8, ['Fahrrad', 'Werkstatt'], 'graphite'),
+  S('turnen2', -1, 24, 8, ['Turnen', '16:00'], 'graphite'),
+  S('buecherei', -1, 25, 8, ['Bücherei'], 'blue'),
+  S('klavier', -1, 26, 8, ['Klavier', '16:00'], 'blue'),
+  S('kino', -1, 27, 8, ['Kino'], 'blue'),
+  S('ben', -1, 28, 8, ['Ben 5'], 'red'),
+  M('circle-ben', -1, 28, 8, 'circle', 'red'),
+  S('grillen', -1, 29, 8, ['Grillen'], 'blue'),
+  S('schuhe', -1, 20, 9, ['Schuhe', 'kaufen'], 'graphite'),
+  S('zahnarzt3', -1, 23, 9, ['Zahnarzt', '9:30'], 'blue'),
+  S('spiele', -1, 24, 9, ['Spiele-', 'abend'], 'blue'),
+  M('heart-ben', -1, 28, 8, 'heart', 'red', 'right'),
+  M('tick-arzt', -1, 28, 6, 'tick', 'red', 'right'),
+  S('oma2', -1, 18, 9, ['Oma kommt'], 'blue'),
 ];
 
 // ------------------------------------------------------------------ stage
@@ -178,13 +155,14 @@ const stageHtml = htmlPage(
      <g id="ink"></g>
    </svg>
    <div id="chip"></div>
-   <div id="end"><p class="line">Genau dafür ist er da.</p><p class="wordmark"><b>plana</b> <span>studio</span></p></div>
+   <div id="end"><div class="band"></div><p class="line">Genau dafür ist er da.</p><p class="wordmark"><b>plana</b> <span>studio</span></p></div>
    <canvas id="m" width="10" height="10" style="display:none"></canvas>`,
   `body{background:${WALL}}
    #chip{position:absolute;left:${SAFE.left}px;top:${SAFE.top + 6}px;padding:9px 18px;border-radius:999px;background:rgba(247,244,249,.9);color:${BRAND.aubergine};font:500 26px/1 Poppins;letter-spacing:.01em;opacity:0}
    #end{position:absolute;left:0;right:0;top:0;bottom:0;opacity:0}
-   #end .line{position:absolute;left:0;right:0;top:410px;margin:0;text-align:center;font:600 62px/1.15 Poppins;letter-spacing:-0.02em;color:${BRAND.ink}}
-   #end .wordmark{position:absolute;left:0;right:0;top:1390px;margin:0;text-align:center;font-size:46px;letter-spacing:-0.03em;line-height:1;color:${BRAND.aubergine}}
+   #end .band{position:absolute;left:0;right:0;top:${SAFE.top}px;height:290px;background:rgba(247,244,249,.985);box-shadow:0 10px 30px rgba(20,20,20,.08)}
+   #end .line{position:absolute;left:0;right:0;top:${SAFE.top + 70}px;margin:0;text-align:center;font:600 62px/1.15 Poppins;letter-spacing:-0.02em;color:${BRAND.ink}}
+   #end .wordmark{position:absolute;left:0;right:0;top:${SAFE.top + 180}px;margin:0;text-align:center;font-size:46px;letter-spacing:-0.03em;line-height:1;color:${BRAND.aubergine}}
    .wordmark b{font-weight:700}.wordmark span{font-weight:400}`,
 );
 
@@ -282,7 +260,7 @@ const GLORIA = FONT_FAMILIES.gloria.css;
     const cell = cellOf(dayNo(it.date[0], it.date[1]));
     const rot = (rand(k + 3) * 2 - 1) * 2;
     if (it.kind === 'text') {
-      for (let size = it.size ?? 5.2 - rand(k) * 0.5; size >= 3.6; size -= 0.2) {
+      for (let size = it.size ?? 5.6 - rand(k) * 0.4; size >= 3.6; size -= 0.2) {
         const s = size / 100;
         const pitch = size * 1.12;
         const m = it.lines.map((ln) => ink.get(ln)!);
@@ -388,19 +366,24 @@ const GLORIA = FONT_FAMILIES.gloria.css;
 
   // ---- camera: follows the writing, then pulls out to the whole sheet
   const T_END = 15.0;
-  const T_CARD = 13.5;
+  const T_CARD = 13.3;
   const ASPECT = W / H;
-  const FULL = { cx: 500, cy: 350, w: 1060 };
+  // Final view: rows June to early October below the end-card band (y 250–540 px); the left edge
+  // sits 5 mm before column 10, so no written cell is cut.
+  const FINAL = { cx: xs[10] - 5 + 124, cy: 398, w: 248 };
   // Keyframes [t, centre x, centre y, width] in mm; Catmull-Rom through them (log width).
+  // Opens on whole title words ("zweitausend&"), pushes in a little, drifts through the year and
+  // pulls back to a mid zoom on June to October, where the notes stay readable on a phone.
   const KF: [number, number, number, number][] = [
-    [0, 116, 179, 168],
-    [1.2, 124, 181, 170],
-    [4.6, 252, 198, 208],
-    [6.3, 482, 256, 258],
-    [8.3, 545, 360, 310],
-    [10.1, 430, 445, 470],
-    [12.7, FULL.cx, FULL.cy, FULL.w],
-    [T_END, FULL.cx, FULL.cy, FULL.w],
+    [0, 139.5, 194, 236],
+    [1.2, 141, 198, 236],
+    [4.6, 262, 214, 218],
+    [6.4, 498, 262, 224],
+    [8.3, 518, 382, 236],
+    [10.0, 345, 548, 250],
+    [10.75, 345, 548, 250],
+    [12.6, FINAL.cx, FINAL.cy, FINAL.w],
+    [T_END, FINAL.cx, FINAL.cy, FINAL.w],
   ];
   const spline = (t: number, get: (k: [number, number, number, number]) => number) => {
     if (t <= KF[0][0]) return get(KF[0]);
@@ -411,7 +394,7 @@ const GLORIA = FONT_FAMILIES.gloria.css;
     const u = Math.min(1, (t - k0[0]) / (k1[0] - k0[0]));
     const dt = k1[0] - k0[0];
     // tangents scaled to the segment; zero at the ends and at the final hold
-    const m0 = i === 0 ? 0 : ((get(k1) - get(prev)) / (k1[0] - prev[0])) * dt;
+    const m0 = i === 0 || i === KF.length - 2 ? 0 : ((get(k1) - get(prev)) / (k1[0] - prev[0])) * dt;
     const m1 = i + 2 >= KF.length - 1 ? 0 : ((get(next) - get(k0)) / (next[0] - k0[0])) * dt;
     const h00 = 2 * u ** 3 - 3 * u ** 2 + 1, h10 = u ** 3 - 2 * u ** 2 + u, h01 = -2 * u ** 3 + 3 * u ** 2, h11 = u ** 3 - u ** 2;
     return h00 * get(k0) + h10 * m0 + h01 * get(k1) + h11 * m1;
@@ -429,18 +412,34 @@ const GLORIA = FONT_FAMILIES.gloria.css;
   const toPx0 = (b: Box, cam: Box) => ({ x: ((b.x - cam.x) / cam.w) * W, y: ((b.y - cam.y) / cam.h) * H, w: (b.w / cam.w) * W, h: (b.h / cam.h) * H });
   const visible = (b: Box, t: number) => { const c = toPx0(b, camAt(t)); return c.x >= 20 && c.x + c.w <= W - 20 && c.y >= SAFE.top && c.y + c.h <= SAFE.bottom; };
   const autos = placed.filter((p) => p.it.t < 0).map((p) => {
-    let e = 10.0;
-    while (e < 12.7 && !(visible(p.cell, e) && visible(p.cell, e + 0.4))) e += 1 / FPS;
+    let e = 10.75;
+    while (e < 12.9 && !(visible(p.cell, e) && visible(p.cell, e + 0.4))) e += 1 / FPS;
     return { p, e };
   });
+  // A note whose cell never comes into view is left out (it would be written off screen).
+  const dropped = autos.filter((a) => a.e >= 12.9);
+  for (const d of dropped) { placed.splice(placed.indexOf(d.p), 1); byId.delete(d.p.it.id); }
+  if (dropped.length) console.log('left out (never in view):', dropped.map((d) => d.p.it.id).join(', '));
+  autos.splice(0, autos.length, ...autos.filter((a) => a.e < 12.9));
   autos.sort((a, b) => a.e - b.e);
   let last = Math.max(...placed.filter((p) => p.it.t >= 0).map((p) => p.it.t));
   for (const a of autos) {
-    const gap = last < 10.7 ? 0.09 : last < 11.4 ? 0.055 : 0.04;
+    const gap = last < 10.8 ? 0.11 : last < 11.8 ? 0.07 : 0.05;
     a.p.it.t = Math.max(a.e, last + gap);
     last = a.p.it.t;
   }
-  if (last > 12.95) throw new Error(`pull-out notes run until ${last.toFixed(2)} s`);
+  if (last + 0.45 > T_CARD) throw new Error(`pull-back notes run until ${last.toFixed(2)} s`);
+  // readability in the final view: ink height of each visible note line, in px
+  {
+    const cam = camAt(T_END);
+    const k = W / cam.w;
+    const hs = placed.filter((p) => p.lines && visible(p.cell, T_END)).flatMap((p) => p.lines!.map((l) => { const m = ink.get(l.s)!; return ((m.a + m.d) * p.size!) / 100 * k; }));
+    hs.sort((x, y) => x - y);
+    const cells = new Set(placed.filter((p) => visible(p.cell, T_END)).map((p) => `${p.cell.x},${p.cell.y}`)).size;
+    let total = 0;
+    for (let n = scene.from; n <= scene.to; n++) if (visible(cellOf(n), T_END)) total++;
+    console.log(`final view: ${(k).toFixed(2)} px/mm, ${hs.length} note lines, ink height min ${hs[0].toFixed(1)} px, median ${hs[hs.length >> 1].toFixed(1)} px; ${cells} of ${total} fully visible cells written on`);
+  }
 
   // ---- visibility: each note is inside the frame's safe band while it is written
   const toPx = (b: Box, cam: Box) => ({ x: ((b.x - cam.x) / cam.w) * W, y: ((b.y - cam.y) / cam.h) * H, w: (b.w / cam.w) * W, h: (b.h / cam.h) * H });
@@ -515,7 +514,8 @@ const GLORIA = FONT_FAMILIES.gloria.css;
   for (let f = 0; f < N; f++) {
     const t = f / FPS;
     const cam = camAt(Math.min(t, T_CARD));
-    const chipO = t < 0.4 ? t / 0.4 : t < 9.6 ? 1 : Math.max(0, 1 - (t - 9.6) / 0.5);
+    // the chip waits until the title has left the top of the frame
+    const chipO = t < 4.6 ? 0 : t < 5.0 ? (t - 4.6) / 0.4 : t < 9.6 ? 1 : Math.max(0, 1 - (t - 9.6) / 0.5);
     const endO = Math.min(1, Math.max(0, (t - T_CARD) / 0.45));
     await page.evaluate(
       ([vb, ink, chip, chipO, endO]: [string, string, string, number, number]) => {
@@ -532,19 +532,8 @@ const GLORIA = FONT_FAMILIES.gloria.css;
     if (f % 60 === 0) console.log(`frame ${f}/${N} ${((Date.now() - t0) / 1000).toFixed(0)}s`);
   }
 
-  // cover: close on the busiest part of the filled sheet, with the end line
-  await page.evaluate(([vb, ink]: [string, string]) => {
-    document.getElementById('cam')!.setAttribute('viewBox', vb);
-    document.getElementById('ink')!.innerHTML = ink;
-    document.getElementById('chip')!.style.opacity = '0';
-    const e = document.getElementById('end')!;
-    e.style.opacity = '1';
-    (e.querySelector('.line') as HTMLElement).style.cssText = 'top:330px;';
-    (e.querySelector('.wordmark') as HTMLElement).style.cssText = 'top:1420px;';
-    e.insertAdjacentHTML('afterbegin', '<div style="position:absolute;left:90px;right:90px;top:300px;height:132px;border-radius:28px;background:rgba(247,244,249,.94)"></div><div style="position:absolute;left:300px;right:300px;top:1394px;height:96px;border-radius:999px;background:rgba(247,244,249,.94)"></div>');
-  }, [`${(470 - 160).toFixed(2)} ${(395 - 284).toFixed(2)} 320 ${(320 / ASPECT).toFixed(2)}`, overlay(99)]);
-  const coverPng = path.join(work, 'cover.png');
-  await page.screenshot({ path: coverPng });
+  // cover: the end frame (dense June to October with the end-card band)
+  const coverPng = framePath(frames, N - 1);
   await close();
 
   const video = path.join(out, 'R01-der-planer-lebt.mp4');

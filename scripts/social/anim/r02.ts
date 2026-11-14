@@ -53,7 +53,7 @@ step('Farbe', PALETTES.mohn.name, palette(PALETTES.mohn));
 step('Titel', '„Familie Berg 2027“', (s) => { s.design.title.text = 'Familie Berg 2027'; });
 step('Schreibweise', 'Wie eingegeben', (s) => { s.design.title.case = 'asis'; });
 step('Titel', '„unser jahr“', (s) => { s.design.title.text = 'unser jahr'; });
-const fontOrder: FontFamilyId[] = ['gloria', 'spacemono', 'archivo', 'abril', 'dmserif'];
+const fontOrder: FontFamilyId[] = ['gloria', 'spacemono', 'dmserif', 'abril', 'archivo'];
 if (TITLE_FONTS.length !== fontOrder.length + 1 || !TITLE_FONTS.every((f) => f === 'poppins' || fontOrder.includes(f))) throw new Error(`title fonts changed: ${TITLE_FONTS}`);
 for (const f of fontOrder) step('Schrift', FONT_FAMILIES[f].label, font(f));
 step('Ausrichtung', 'Mittig', (s) => { s.design.title.align = 'center'; });
@@ -61,16 +61,16 @@ step('Layout', LAYOUTS.find((l) => l.id === 'zeilen')!.name, (s) => { s.layout =
 step('Layout', LAYOUTS.find((l) => l.id === 'spalten')!.name, (s) => { s.layout = 'spalten'; });
 // the lift: one beat per change (12 states)
 step('Layout', LAYOUTS.find((l) => l.id === 'wochen')!.name, (s) => { s.layout = 'wochen'; });
+step('Ausrichtung', 'Links', (s) => { s.design.title.align = 'left'; });
 step('Ferien', 'Unterstrichen', (s) => { s.design.schoolHolidays = 'underline'; });
 step('Ferien', 'Band', (s) => { s.design.schoolHolidays = 'band'; });
 step('Monatsnamen', 'Waagerecht', (s) => { s.design.monthLabel = 'horizontal'; });
 step('Wochenenden', 'Kräftig', (s) => { s.design.shading = 0.2; });
 step('Wochenenden', 'Zart', (s) => { s.design.shading = 0.05; });
 step('Bundesland', STATES.BY, state('BY'));
-step('Bundesland', STATES.HH, state('HH'));
 step('Bundesland', STATES.SN, state('SN'));
 step('Startmonat', `${MONTHS_DE[8]} 2027`, (s) => { s.start = { year: 2027, month: 9 }; });
-step('Schreibweise', 'Großbuchstaben', (s) => { s.design.title.case = 'upper'; });
+step('Titelgröße', 'Groß', (s) => { s.design.title.scale = 1.25; });
 step('Farbe', 'Aubergine', edition('aubergine'));
 
 const stateList: State[] = [];
@@ -86,31 +86,45 @@ stateList.push({ beat: 44, cat: '', value: '', spec: clone(cur), final: true });
 
 // ------------------------------------------------------------------ pages
 const mix = (a: string, b: string, t: number) => '#' + [1, 3, 5].map((i) => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - t) + parseInt(b.slice(i, i + 2), 16) * t).toString(16).padStart(2, '0')).join('');
-const CENTER_Y = 905;
+// Layout of the frame: label (top of the safe area), the whole sheet at full safe width, and
+// below it a 2.5× detail panel of the same SVG showing the title and the first rows.
+const M = 48;
+const BOX = { x: M, y: 368, w: W - 2 * M, h: 689 };
+const PANEL = { x: M, y: BOX.y + BOX.h + 22, w: W - 2 * M, h: SAFE.bottom - (BOX.y + BOX.h + 22) };
+const ZOOM = 2.5;
 function pageFor(s: State) {
   const { scene, svg } = planner(s.spec, `${s.cat} ${s.value}`);
   const { paper, accent } = s.spec.design.colors;
   const bg = mix(paper, '#ffffff', 0.62);
-  const landscape = scene.width > scene.height;
-  const w = landscape ? 936 : 672;
-  const h = Math.round((w * scene.height) / scene.width);
-  const top = Math.round(CENTER_Y - h / 2);
-  const sheet = svg.replace('<svg ', `<svg width="${w}" height="${h}" style="display:block" `);
+  const k = Math.min(BOX.w / scene.width, BOX.h / scene.height);
+  const w = Math.round(scene.width * k), h = Math.round(scene.height * k);
+  const sx = BOX.x + (BOX.w - w) / 2, sy = BOX.y + (BOX.h - h) / 2;
+  // detail region in mm: from just above the title down through the first rows, placed where the title is anchored
+  const pk = k * ZOOM;
+  const rw = PANEL.w / pk, rh = PANEL.h / pk;
+  const align = s.spec.design.title.align;
+  const rx = align === 'left' ? 18 : align === 'center' ? (scene.width - rw) / 2 : scene.width - 18 - rw;
+  const ry = 22;
+  const sized = (v: string, ww: number, hh: number) => v.replace('<svg ', `<svg width="${ww}" height="${hh}" style="display:block" `);
+  const detail = sized(svg.replace(/viewBox="[^"]*"/, `viewBox="${rx} ${ry} ${rw} ${rh}"`), PANEL.w, PANEL.h);
   const label = s.final
-    ? `<div class="end">Du entscheidest.</div><div class="url" style="top:${top + h + 70}px;color:${accent}">plana-planer.de</div>`
+    ? `<div class="end">Du entscheidest.</div><div class="url" style="color:${accent}">plana-planer.de</div>`
     : `<div class="label"><div class="cat">${s.cat}</div><div class="val" style="color:${accent}">${s.value}</div></div>`;
   return {
     html: htmlPage(
-      `<div class="sheet" style="left:${(W - w) / 2}px;top:${top}px;width:${w}px;height:${h}px">${sheet}</div>${label}`,
+      `<div class="card" style="left:${sx}px;top:${sy}px;width:${w}px;height:${h}px">${sized(svg, w, h)}</div>
+       <div class="mark" style="left:${sx + rx * k}px;top:${sy + ry * k}px;width:${rw * k}px;height:${rh * k}px;border-color:${accent}"></div>
+       <div class="card" style="left:${PANEL.x}px;top:${PANEL.y}px;width:${PANEL.w}px;height:${PANEL.h}px">${detail}</div>${label}`,
       `body{background:${bg}}
-       .sheet{position:absolute;box-shadow:0 2px 4px rgba(20,20,20,.06),0 18px 44px rgba(20,20,20,.10)}
-       .label{position:absolute;left:0;right:0;top:${SAFE.top + 34}px;text-align:center}
-       .cat{font:500 28px/1 Poppins;letter-spacing:.02em;color:${BRAND.muted}}
-       .val{margin-top:14px;font:600 54px/1.1 Poppins;letter-spacing:-0.02em}
-       .end{position:absolute;left:0;right:0;top:${SAFE.top + 60}px;text-align:center;font:600 66px/1.1 Poppins;letter-spacing:-0.02em;color:${BRAND.ink}}
-       .url{position:absolute;left:0;right:0;text-align:center;font:500 40px/1 Poppins;letter-spacing:-0.01em}`,
+       .card{position:absolute;overflow:hidden;box-shadow:0 1px 3px rgba(20,20,20,.07),0 14px 36px rgba(20,20,20,.10)}
+       .mark{position:absolute;border:2px solid;opacity:.55;box-sizing:border-box}
+       .label{position:absolute;left:0;right:0;top:${SAFE.top + 6}px;text-align:center}
+       .cat{font:500 26px/1 Poppins;letter-spacing:.02em;color:${BRAND.muted}}
+       .val{margin-top:10px;font:600 48px/1.1 Poppins;letter-spacing:-0.02em}
+       .end{position:absolute;left:0;right:0;top:${SAFE.top + 2}px;text-align:center;font:600 58px/1.1 Poppins;letter-spacing:-0.02em;color:${BRAND.ink}}
+       .url{position:absolute;left:0;right:0;top:${SAFE.top + 74}px;text-align:center;font:500 32px/1 Poppins;letter-spacing:-0.01em}`,
     ),
-    bottom: top + h,
+    bottom: PANEL.y + PANEL.h,
   };
 }
 
@@ -119,7 +133,7 @@ function pageFor(s: State) {
   const { page, close } = await openStage(work, htmlPage(''));
   for (const [i, s] of stateList.entries()) {
     const { html, bottom } = pageFor(s);
-    if (bottom + (s.final ? 110 : 0) > SAFE.bottom) throw new Error(`state ${i} reaches into the bottom safe area`);
+    if (bottom > SAFE.bottom) throw new Error(`state ${i} reaches into the bottom safe area`);
     await page.setContent(html);
     await page.evaluate(() => document.fonts.ready);
     const png = path.join(work, `state-${String(i).padStart(2, '0')}.png`);
