@@ -62,6 +62,9 @@ export function plannerFor(k: Key) {
   return cache.get(id)!;
 }
 
+/** Advance of the title up to and including "&", in mm, as the browser lays it out (set by build.ts). */
+export const titleAdvance = new Map<string, number>();
+
 export type Box = { x: number; y: number; w: number; h: number };
 type Text = Extract<Prim, { k: 'text' }>;
 const texts = (s: Scene) => s.prims.filter((p): p is Text => p.k === 'text');
@@ -123,9 +126,10 @@ export function region(k: Key, name: string, aspect: number, focus?: number): Bo
       // in the gap after the "&" (measured with the engine's own font metrics), never mid-letter.
       const title = t.find((p) => p.size > 20)!;
       const amp = title.s.indexOf('&');
-      const end = title.x + measure(title.s.slice(0, amp + 1), title.face, title.size, title.ls ?? 0);
+      // Advance as laid out by the browser (measured in build.ts) when known; the engine's metrics otherwise.
+      const end = title.x + (titleAdvance.get(keyId(k)) ?? measure(title.s.slice(0, amp + 1), title.face, title.size, title.ls ?? 0));
       const x0 = title.x - 14;
-      const w = end + 3 - x0;
+      const w = end + 0.6 - x0; // the "&" ink ends inside its advance; the next letter starts right after it
       return fit({ x: x0, y: 10, w, h: w / aspect }, aspect, scene, w);
     }
     case 'monatswechsel': {

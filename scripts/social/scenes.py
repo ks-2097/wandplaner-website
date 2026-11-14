@@ -70,7 +70,10 @@ def scene(name):
     chroma = a.max(2) - a.min(2)
     paper = np.clip((62 - chroma) / 20, 0, 1) * (a.min(2) > 70)
     m = np.asarray(Image.fromarray((paper * 255).astype(np.uint8)).filter(ImageFilter.GaussianBlur(1.2))).astype(np.float32) / 255
-    _cache[name] = {'img': im, 'mask': Image.fromarray(m, 'F'), 'rect': rect, 'W': W, 'H': H}
+    # A softly blurred copy: the light on the paper when a reel magnifies the photo far beyond its
+    # resolution (otherwise the source's compression blocks would show through the planner).
+    soft = im.filter(ImageFilter.GaussianBlur(2.5))
+    _cache[name] = {'img': im, 'soft': soft, 'mask': Image.fromarray(m, 'F'), 'rect': rect, 'W': W, 'H': H}
     print(f'{name}: sheet {rect[0]:.2f},{rect[1]:.2f} – {rect[2]:.2f},{rect[3]:.2f}  ({rect[2]-rect[0]:.1f} × {rect[3]-rect[1]:.1f}, ratio {(rect[2]-rect[0])/(rect[3]-rect[1]):.4f})', file=sys.stderr)
     return _cache[name]
 
@@ -126,13 +129,16 @@ def composite(sc, planner, crop, out_w, out_h):
     i0, i1 = max(int(np.floor(oy0)), 0), min(int(np.ceil(oy1)), out_h)
     j0, j1 = max(int(np.floor(ox0)), 0), min(int(np.ceil(ox1)), out_w)
     out = S.copy()
+    # paper light: the photo itself at normal scale, its soft copy once it is magnified more than 1.5×
+    wsoft = min(max((sx - 1.5) / 1.5, 0.0), 1.0)
+    L = S if wsoft == 0 else S * (1 - wsoft) + np.asarray(sc['soft'].resize((out_w, out_h), Image.BICUBIC, box=box)).astype(np.float32) * wsoft
     if i1 > i0 and j1 > j0:
         # planner fractions of the output sub-window [j0, j1) × [i0, i1)
         u = lambda px: (px - ox0) / (ox1 - ox0)
         v = lambda py: (py - oy0) / (oy1 - oy0)
         P = planner.sample((u(j0), v(i0), u(j1), v(i1)), j1 - j0, i1 - i0) / 255
         m = (M[i0:i1, j0:j1] * cov[i0:i1, j0:j1])[..., None]
-        out[i0:i1, j0:j1] = S[i0:i1, j0:j1] * (1 - m * (1 - P))
+        out[i0:i1, j0:j1] = S[i0:i1, j0:j1] * (1 - m) + L[i0:i1, j0:j1] * P * m
     return out.clip(0, 255).round().astype(np.uint8)
 
 

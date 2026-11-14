@@ -12,8 +12,8 @@ import os from 'node:os';
 import path from 'node:path';
 import { LAYOUTS, MONTHS_DE, STATES, toDayNumber, type LayoutId, type StateCode } from '../../src/planner';
 import { captureConfigurator } from './configurator';
-import { keyId, plannerFor, region, summerLine, type Key } from './planner';
-import { ROOT, closeBrowser, cropSvg, page, rasterPlanner, setWork, shoot } from './render';
+import { keyId, plannerFor, region, summerLine, titleAdvance, type Key } from './planner';
+import { ROOT, browser, closeBrowser, cropSvg, page, rasterPlanner, setWork, shoot } from './render';
 
 const require = createRequire(import.meta.url);
 const sharp = require('sharp') as typeof import('sharp').default;
@@ -173,6 +173,17 @@ function namedDay(text: string): number | undefined {
   return m ? toDayNumber(2027, MONTHS_DE.indexOf(m[2]) + 1, Number(m[1])) : undefined;
 }
 
+/** Width of the title up to "&" in mm, from Chromium's own text layout (the crop must not cut a letter). */
+async function measureTitle(svg: string): Promise<number> {
+  const b = await browser();
+  const pg = await b.newPage();
+  await pg.setContent(page(svg));
+  await pg.evaluate('document.fonts.ready');
+  const w = (await pg.evaluate(`(() => { const t = [...document.querySelectorAll('text')].find((e) => e.textContent.includes('&')); return t.getSubStringLength(0, t.textContent.indexOf('&') + 1); })()`)) as number;
+  await pg.close();
+  return w;
+}
+
 async function visualHtml(f: Format, vis: Visual, text = ''): Promise<string> {
   const W = f.w;
   const H = f.visH;
@@ -182,6 +193,7 @@ async function visualHtml(f: Format, vis: Visual, text = ''): Promise<string> {
   }
   if (vis.kind === 'zoom') {
     const { svg } = plannerFor(vis.key);
+    if (vis.region === 'titel' && !titleAdvance.has(keyId(vis.key))) titleAdvance.set(keyId(vis.key), await measureTitle(svg));
     const b = region(vis.key, vis.region, W / H, vis.region === 'ferien' ? namedDay(text) : undefined);
     return `<div style="position:absolute;left:0;top:0;width:${W}px;height:${H}px;overflow:hidden">${cropSvg(svg, b)}</div>`;
   }
@@ -407,6 +419,8 @@ async function main() {
     if (!want(post.id)) continue;
     let n = 1;
     for (const [i, slide] of post.slides.entries()) {
+      // Animated reels (reel:anim:*) are built by scripts/social/anim, not here.
+      if (slide.visual.startsWith('reel:anim:')) { console.log(`${post.id}: ${slide.visual} is built by scripts/social/anim, skipped`); continue; }
       const { story, vis } = parseVisual(slide.visual);
       if (vis.kind === 'pushin' || vis.kind === 'tryon' || vis.kind === 'configurator') {
         if (vis.kind === 'pushin') await pushin(post.id, vis, post.onScreen);
