@@ -16,7 +16,7 @@ import { keyId, plannerFor, region, summerLine, type Key } from './planner';
 import { ROOT, closeBrowser, cropSvg, page, rasterPlanner, setWork, shoot } from './render';
 
 const require = createRequire(import.meta.url);
-const sharp = require('sharp') as typeof import('sharp');
+const sharp = require('sharp') as typeof import('sharp').default;
 
 // ---------------------------------------------------------------- arguments
 const argv = process.argv.slice(2);
@@ -103,7 +103,8 @@ function parseVisual(v: string): { story: boolean; vis: Visual } {
 
 // ---------------------------------------------------------------- posts.json
 type Slide = { visual: string; text: string; detail?: string; sticker?: string };
-type Post = { id: string; format: string; slides: Slide[]; needsPhoto?: string };
+type OnScreen = { from: number; to: number; text: string };
+type Post = { id: string; format: string; slides: Slide[]; needsPhoto?: string; onScreen?: OnScreen[] };
 type Pin = { id: string; visual: string; text: string };
 const brief = JSON.parse(readFileSync(path.join(ROOT, 'marketing/posts.json'), 'utf8')) as { posts: Post[]; pins: Pin[]; profile: { avatar: string; highlights: string[] } };
 
@@ -286,7 +287,37 @@ async function overlayPng(name: string, label?: string) {
   return out;
 }
 
-async function pushin(postId: string, vis: Extract<Visual, { kind: 'pushin' }>) {
+/**
+ * Timed on-screen text as transparent layers. Lines whose times overlap stack like a chat: the
+ * first is a small header, the others are messages. Cards sit bottom-left, above the bottom 380 px
+ * and clear of the right-hand button column; the top 250 px stay free.
+ */
+async function textLayers(postId: string, items: OnScreen[]) {
+  const stacks: OnScreen[][] = [];
+  for (const it of items) {
+    const st = stacks.find((g) => g.some((o) => o.from < it.to && it.from < o.to));
+    if (st) st.push(it); else stacks.push([it]);
+  }
+  const layers: { png: string; from: number; to: number }[] = [];
+  for (const [si, st] of stacks.entries())
+    for (const [i, it] of st.entries()) {
+      const header = st.length > 1 && i === 0;
+      const cards = st.map((o, j) => {
+        const small = st.length > 1 && j === 0;
+        const style = small
+          ? `font-size:34px;font-weight:500;color:${C.muted};padding:14px 24px 15px`
+          : `font-size:54px;font-weight:600;letter-spacing:-0.01em;color:${C.aubergine};padding:20px 28px 24px`;
+        return `<div style="${style};background:${C.surface};line-height:1.18;width:fit-content;max-width:860px;text-wrap:balance;visibility:${j === i ? 'visible' : 'hidden'}">${esc(o.text)}</div>`;
+      }).join('');
+      const out = path.join(WORK, 'overlay', `${postId}-text-${si}-${i}.png`);
+      await shoot(page(`<div style="position:absolute;left:72px;bottom:400px;display:flex;flex-direction:column;gap:12px;align-items:flex-start">${cards}</div>`, 'html,body{background:transparent;width:1080px;height:1920px;position:relative}'), VID.w, VID.h, out, { transparent: true });
+      layers.push({ png: out, from: it.from, to: it.to });
+      void header;
+    }
+  return layers;
+}
+
+async function pushin(postId: string, vis: Extract<Visual, { kind: 'pushin' }>, onScreen?: OnScreen[]) {
   const dir = path.join(OUT, postId);
   mkdirSync(dir, { recursive: true });
   const out = path.join(dir, fname(postId, 1, 'mp4'));
@@ -298,7 +329,12 @@ async function pushin(postId: string, vis: Extract<Visual, { kind: 'pushin' }>) 
     ? { c: [583 / scene.width, 318 / scene.height], w: 190 / scene.width }
     : { c: [452 / scene.width, 520 / scene.height], w: 200 / scene.width };
   const start = { wohnzimmer: { c: [1024.7, 680], w: 765 }, flur: { c: [895.9, 1120], w: 1260 }, kueche: { c: [1021, 680], w: 765 } }[vis.scene];
-  const job: Job = { type: 'pushin', scene: vis.scene, planner: await raster(vis.key, 12), w: VID.w, h: VID.h, start, end, seconds: 11, move: [0.9, 9.0], overlay: await overlayPng('chip'), out };
+  // With on-screen text (P04): hold the room while the chat line is read, push in under "Wir:",
+  // arrive while "Steht an der Wand." comes up, then hold. Without text: an 11 s push.
+  const seconds = onScreen?.length ? Math.max(12, ...onScreen.map((o) => o.to)) : 11;
+  const move = onScreen?.length ? [3.3, seconds - 2.0] : [0.9, 9.0];
+  const texts = onScreen?.length ? await textLayers(postId, onScreen) : [];
+  const job: Job = { type: 'pushin', scene: vis.scene, planner: await raster(vis.key, 12), w: VID.w, h: VID.h, start, end, seconds, move, overlay: await overlayPng('chip'), texts, fade: 0.3, out };
   videoTasks.push(async () => python([job]));
   add(postId, { file: path.relative(OUT, out), width: VID.w, height: VID.h, kind: 'video' });
 }
@@ -327,7 +363,7 @@ async function tryon(postId: string) {
   add(postId, { file: path.relative(OUT, out), width: VID.w, height: VID.h, kind: 'video' });
 }
 
-async function cover(postId: string, n: number, text: string, vis: Visual) {
+async function cover(postId: string, n: number, text: string, vis: Visual, onScreen?: OnScreen[]) {
   const dir = path.join(OUT, postId);
   const out = path.join(dir, fname(postId, n, 'jpg'));
   let inner: string;
@@ -337,7 +373,12 @@ async function cover(postId: string, n: number, text: string, vis: Visual) {
     const shot = path.join(WORK, 'configurator', 'cover.png');
     inner = `<img src="${fileUrl(shot)}" style="position:absolute;left:0;top:0;width:${COVER.w}px;height:${COVER.visH}px;object-fit:cover;object-position:50% 0">`;
   }
-  inner += textHtml(COVER, text);
+  if (onScreen && onScreen.length > 1) {
+    // The cover opens like the video: the chat header and the question, one size, header muted.
+    const f = COVER;
+    inner += `<div style="position:absolute;left:${f.m}px;top:${f.textTop}px;width:${f.w - 2 * f.m}px;font-size:${f.head}px;line-height:1.18;font-weight:600;letter-spacing:-0.01em;text-wrap:balance">
+      <div style="color:${C.muted}">${esc(onScreen[0].text)}</div><div style="color:${C.ink}">${esc(onScreen[1].text)}</div></div>`;
+  } else inner += textHtml(COVER, text);
   add(postId, { file: path.relative(OUT, out), width: COVER.w, height: COVER.h, kind: 'cover', note: 'Reel cover; the centre 1080 × 1440 is the grid crop.' });
   pending.push(() => renderImage(COVER, inner, C.surface, out));
 }
@@ -368,7 +409,7 @@ async function main() {
     for (const [i, slide] of post.slides.entries()) {
       const { story, vis } = parseVisual(slide.visual);
       if (vis.kind === 'pushin' || vis.kind === 'tryon' || vis.kind === 'configurator') {
-        if (vis.kind === 'pushin') await pushin(post.id, vis);
+        if (vis.kind === 'pushin') await pushin(post.id, vis, post.onScreen);
         else if (vis.kind === 'tryon') await tryon(post.id);
         else {
           const dir = path.join(OUT, post.id);
@@ -377,7 +418,7 @@ async function main() {
           videoTasks.unshift(() => captureConfigurator(path.join(WORK, 'configurator'), out));
           add(post.id, { file: path.relative(OUT, out), width: VID.w, height: VID.h, kind: 'video' });
         }
-        await cover(post.id, 2, slide.text, vis);
+        await cover(post.id, 2, slide.text, vis, post.onScreen);
         n = 3;
         continue;
       }

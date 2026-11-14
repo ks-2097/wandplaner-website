@@ -194,8 +194,10 @@ def run(job, planners):
         n = int(round(job['seconds'] * fps))
         a, b = job['move']  # seconds when the move starts and ends
         ov = load_overlay(job.get('overlay'))
+        # timed text layers (RGBA PNGs at video size) with short fades
+        texts = [(load_overlay(t['png']), t['from'], t['to']) for t in job.get('texts', [])]
+        fade = job.get('fade', 0.3)
         enc = ffmpeg(job['out'], W, H)
-        strip = []
         for f in range(n):
             s = smooth((f / fps - a) / (b - a))
             wf = w0 * (w1 / w0) ** s  # geometric zoom: constant perceived speed
@@ -204,6 +206,16 @@ def run(job, planners):
             cy = c0[1] + (c1[1] - c0[1]) * k
             hf = wf * H / W
             frame = overlay(composite(sc, P, (cx - wf / 2, cy - hf / 2, wf, hf), W, H), ov)
+            tsec = f / fps
+            for png, t0, t1 in texts:
+                al = min((tsec - t0) / fade, (t1 - tsec) / fade, 1.0)
+                if t1 >= job['seconds'] - 1e-6:
+                    al = min((tsec - t0) / fade, 1.0)  # the last line stays to the end
+                if al > 0:
+                    al = smooth(al)
+                    layer = png.copy()
+                    layer[..., 3] = (layer[..., 3].astype(np.float32) * al).round().astype(np.uint8)
+                    frame = overlay(frame, layer)
             enc.stdin.write(frame.tobytes())
             if f in [round(q * (n - 1)) for q in (0, .25, .5, .75, 1)]:
                 Image.fromarray(frame).save(job['out'].replace('.mp4', f'-f{f:04d}.png'))

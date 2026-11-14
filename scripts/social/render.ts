@@ -7,7 +7,9 @@ import type { Box } from './planner';
 
 const require = createRequire(import.meta.url);
 // Playwright is installed globally in this environment (no new npm dependency).
-const { chromium } = require('playwright') as typeof import('playwright');
+// Typed loosely: the package is not in this repo's node_modules, so its types are not either.
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const { chromium } = require('playwright') as { chromium: { launch(opts?: object): Promise<any> } };
 
 export const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), '../..');
 
