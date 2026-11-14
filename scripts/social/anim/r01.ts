@@ -85,7 +85,7 @@ const ITEMS: Item[] = [
   M('heart-paul', 3.45, 6, 1, 'heart', 'red', 'right'),
   S('joggen', 3.95, 3, 3, ['Joggen 7:00'], 'blue', 'top'),
   { kind: 'strike', id: 'strike-joggen', t: 4.36, of: 'joggen', pen: 'blue' },
-  S('spazieren', 4.56, 3, 3, ['Spazier-', 'gang'], 'blue'),
+  S('spazieren', 4.56, 3, 3, ['Spazieren'], 'blue'),
   S('kinderarzt', 3.42, 4, 2, ['Kinderarzt', '10:15'], 'graphite'),
   S('schwimm2', 5.45, 9, 3, ['Schwimm-', 'kurs'], 'graphite'),
   M('circle-lea', 5.75, 10, 3, 'circle', 'blue'),
@@ -142,6 +142,30 @@ const ITEMS: Item[] = [
   S('zahnarzt2', -1, 10, 11, ['Zahnarzt', '9:30'], 'blue'),
   S('schwimm3', -1, 16, 3, ['Schwimm-', 'kurs'], 'graphite'),
   S('ostsee2', -1, 22, 7, ['Ostsee'], 'blue'),
+  S('fussball2', -1, 6, 2, ['Fußball'], 'graphite'),
+  M('heart-valentin', -1, 14, 2, 'heart', 'red', 'top'),
+  S('klavier', -1, 18, 2, ['Klavier', '16:00'], 'blue'),
+  S('garten', -1, 24, 4, ['Garten'], 'graphite'),
+  S('laufen', -1, 25, 4, ['Laufen'], 'blue'),
+  S('laufen2', -1, 30, 5, ['Laufen'], 'blue'),
+  S('oma75', -1, 2, 6, ['Oma 75'], 'red'),
+  M('circle-oma75', -1, 2, 6, 'circle', 'red'),
+  S('pass', -1, 8, 6, ['Pass', 'abholen'], 'graphite'),
+  S('zoo', -1, 13, 6, ['Zoo'], 'blue'),
+  S('packen', -1, 2, 7, ['Packen'], 'blue'),
+  S('mama', -1, 3, 8, ['Mama 45'], 'red'),
+  M('circle-mama', -1, 3, 8, 'circle', 'red'),
+  S('zelten', -1, 14, 8, ['Zelten'], 'graphite'),
+  S('fussball3', -1, 11, 9, ['Fußball'], 'graphite'),
+  S('brunch', -1, 12, 9, ['Brunch'], 'red'),
+  S('kino2', -1, 8, 10, ['Kino'], 'blue'),
+  S('tierarzt', -1, 12, 10, ['Tierarzt'], 'graphite'),
+  S('spiele', -1, 22, 10, ['Spiele-', 'abend'], 'blue'),
+  S('konzert', -1, 19, 11, ['Konzert'], 'red'),
+  S('klavier2', -1, 25, 11, ['Klavier', '16:00'], 'blue'),
+  S('plaetzchen', -1, 4, 12, ['Plätzchen'], 'red'),
+  S('baum', -1, 18, 12, ['Tannen-', 'baum'], 'graphite'),
+  M('tick-pass', -1, 8, 6, 'tick', 'red', 'right'),
 ];
 
 // ------------------------------------------------------------------ stage
@@ -157,7 +181,7 @@ const stageHtml = htmlPage(
    <div id="end"><p class="line">Genau dafür ist er da.</p><p class="wordmark"><b>plana</b> <span>studio</span></p></div>
    <canvas id="m" width="10" height="10" style="display:none"></canvas>`,
   `body{background:${WALL}}
-   #chip{position:absolute;left:${SAFE.left}px;top:${SAFE.top + 22}px;padding:12px 22px;border-radius:999px;background:rgba(247,244,249,.92);color:${BRAND.aubergine};font:500 30px/1 Poppins;letter-spacing:.01em;opacity:0}
+   #chip{position:absolute;left:${SAFE.left}px;top:${SAFE.top + 6}px;padding:9px 18px;border-radius:999px;background:rgba(247,244,249,.9);color:${BRAND.aubergine};font:500 26px/1 Poppins;letter-spacing:.01em;opacity:0}
    #end{position:absolute;left:0;right:0;top:0;bottom:0;opacity:0}
    #end .line{position:absolute;left:0;right:0;top:410px;margin:0;text-align:center;font:600 62px/1.15 Poppins;letter-spacing:-0.02em;color:${BRAND.ink}}
    #end .wordmark{position:absolute;left:0;right:0;top:1390px;margin:0;text-align:center;font-size:46px;letter-spacing:-0.03em;line-height:1;color:${BRAND.aubergine}}
@@ -412,7 +436,7 @@ const GLORIA = FONT_FAMILIES.gloria.css;
   autos.sort((a, b) => a.e - b.e);
   let last = Math.max(...placed.filter((p) => p.it.t >= 0).map((p) => p.it.t));
   for (const a of autos) {
-    const gap = last < 11 ? 0.12 : 0.08;
+    const gap = last < 10.7 ? 0.09 : last < 11.4 ? 0.055 : 0.04;
     a.p.it.t = Math.max(a.e, last + gap);
     last = a.p.it.t;
   }
@@ -516,8 +540,8 @@ const GLORIA = FONT_FAMILIES.gloria.css;
     const e = document.getElementById('end')!;
     e.style.opacity = '1';
     (e.querySelector('.line') as HTMLElement).style.cssText = 'top:330px;';
-    (e.querySelector('.wordmark') as HTMLElement).style.cssText = 'top:1500px;';
-    e.insertAdjacentHTML('afterbegin', '<div style="position:absolute;left:90px;right:90px;top:300px;height:132px;border-radius:28px;background:rgba(247,244,249,.94)"></div><div style="position:absolute;left:300px;right:300px;top:1474px;height:96px;border-radius:999px;background:rgba(247,244,249,.94)"></div>');
+    (e.querySelector('.wordmark') as HTMLElement).style.cssText = 'top:1420px;';
+    e.insertAdjacentHTML('afterbegin', '<div style="position:absolute;left:90px;right:90px;top:300px;height:132px;border-radius:28px;background:rgba(247,244,249,.94)"></div><div style="position:absolute;left:300px;right:300px;top:1394px;height:96px;border-radius:999px;background:rgba(247,244,249,.94)"></div>');
   }, [`${(470 - 160).toFixed(2)} ${(395 - 284).toFixed(2)} 320 ${(320 / ASPECT).toFixed(2)}`, overlay(99)]);
   const coverPng = path.join(work, 'cover.png');
   await page.screenshot({ path: coverPng });
