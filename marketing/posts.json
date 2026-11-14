@@ -17,7 +17,7 @@
      "text": "das jahr als bild."
     }
    ],
-   "caption": "Das hier ist plana studio. Ein Wandplaner, 70 × 100 cm, auf dem dein ganzes Jahr Platz hat. Inklusive der Antwort auf die Frage, wann eigentlich Herbstferien sind.\n\n13 Reihen mit je vier Wochen, die Schulferien und Feiertage deines Bundeslandes schon eingetragen, eure Geburtstage dazu. Der Kühlschrank darf sich ab jetzt wieder ums Kühlen kümmern.\n\nAb 26. November bestellbar, rechtzeitig vor Weihnachten. Wer auf der Warteliste steht, erfährt es zuerst. Link im Profil.",
+   "caption": "Das hier ist plana studio. Ein Wandplaner, 70 × 100 cm, auf dem dein ganzes Jahr Platz hat.\n\n13 Reihen mit je vier Wochen, die Schulferien und Feiertage deines Bundeslandes schon eingetragen, eure Geburtstage dazu. Der Kühlschrank darf sich ab jetzt wieder ums Kühlen kümmern.\n\nAb 26. November bestellbar, rechtzeitig vor Weihnachten. Wer auf der Warteliste steht, erfährt es zuerst. Link im Profil.",
    "hashtags": [
     "wandplaner",
     "jahresplaner",
@@ -50,14 +50,14 @@
     },
     {
      "visual": "zoom:wochen:aubergine:BE:geburtstag",
-     "text": "Geburtstage, Reisen und eure Termine trägst du selbst ein."
+     "text": "Geburtstage und Reisen kommen vor dem Druck dazu. Eure Termine schreibst du später selbst hinein."
     },
     {
      "visual": "room:kueche:zeilen:salbei:BY",
      "text": "70 × 100 cm, mattes Papier, gerollt geliefert."
     }
    ],
-   "caption": "Ein Blatt, 364 Tage. Die Kurzanleitung:\n\n1. Jede Reihe sind genau vier Wochen. Montag steht immer über Montag. Montage werden dadurch nicht schöner, aber vorhersehbar.\n2. Die Ferien deines Bundeslandes sind schon drin. Der Elternchat darf sich wieder anderen Themen widmen.\n3. Geburtstage und Reisen kommen dazu, bevor gedruckt wird.\n4. Du siehst vorher die echte Druckdatei. Was du freigibst, hängt später genau so an der Wand.\n\nWarteliste: Link im Profil.",
+   "caption": "Ein Blatt, 364 Tage. Die Kurzanleitung:\n\n1. Jede Reihe sind genau vier Wochen. Montag steht immer über Montag. Montage werden dadurch nicht schöner, aber vorhersehbar.\n2. Die Schulferien und Feiertage deines Bundeslandes sind schon drin.\n3. Geburtstage und Reisen kommen dazu, bevor gedruckt wird.\n4. Du siehst vorher die echte Druckdatei. Was du freigibst, hängt später genau so an der Wand.\n\nWarteliste: Link im Profil.",
    "hashtags": [
     "wandplaner",
     "jahresplaner",
@@ -80,7 +80,7 @@
      "text": "Angefangen hat es mit einem Planer, den Konrad jedes Jahr von Hand an seine Wand zeichnet."
     }
    ],
-   "caption": "Wie es anfing: Konrad zeichnet seit Jahren jedes Jahr einen Planer von Hand an seine Wand. Mit Lineal, Bleistift und einer Geduld, die wir nicht jedem empfehlen würden.\n\nVier Wochen pro Reihe, die Monate als Treppe, Reisen als Pfeile quer über die Tage. Freunde wollten auch einen. Konrad wollte nicht noch zehn zeichnen.\n\nAlso haben wir aus der Zeichnung einen Druck gemacht, der genauso funktioniert, für jede Familie und jedes Bundesland.",
+   "caption": "Wie es anfing: Konrad zeichnet seit Jahren seinen Planer von Hand an die Wand. Mit Lineal, Bleistift und einer Geduld, die wir nicht jedem empfehlen würden.\n\nVier Wochen pro Reihe, die Monate als Treppe, Reisen als Pfeile quer über die Tage. Freunde wollten auch einen. Konrad wollte nicht noch zehn zeichnen.\n\nAlso haben wir aus der Zeichnung einen Druck gemacht, der genauso funktioniert, für jede Familie und jedes Bundesland.",
    "hashtags": [
     "wandplaner",
     "handgezeichnet",
@@ -165,11 +165,11 @@
     {
      "visual": "story:card",
      "text": "Euer Familienkalender ist ehrlich gesagt …",
-     "sticker": "Umfrage-Sticker mit 4 Antworten: eine App / der Kühlschrank / ein Kopf, der nachts wach liegt / gibt es nicht"
+     "sticker": "Umfrage-Sticker mit 4 Antworten: eine App / der Kühlschrank / ein Kopf, der alles weiß / gibt es nicht"
     },
     {
      "visual": "story:room:kueche:zeilen:salbei:NW",
-     "text": "Wir hätten noch eine Wand im Angebot."
+     "text": "Oder eine Wand."
     }
    ],
    "caption": "",
@@ -185,7 +185,7 @@
    "slides": [
     {
      "visual": "card",
-     "text": "Welches Bundesland bist du?"
+     "text": "Welches Bundesland ist deins?"
     },
     {
      "visual": "sheet:wochen:aubergine:BY",
@@ -209,7 +209,7 @@
     },
     {
      "visual": "card",
-     "text": "Alle 16 Bundesländer sind dabei. Ein zweites für Großeltern oder getrennte Haushalte geht auch."
+     "text": "Alle 16 Bundesländer sind dabei. Ein zweites Bundesland für Großeltern oder getrennte Haushalte geht auch."
     }
    ],
    "caption": "Gleicher Planer, vier Bundesländer, vier verschiedene Jahre. Wenn Bayern am 2. August in die Sommerferien startet, hat Hamburg schon viereinhalb Wochen hinter sich.\n\nDie Linien über den Tagen sind die Schulferien. Welches Bundesland ist deins? Schreib es in die Kommentare, wir antworten mit deinen Sommerferien.",
@@ -263,7 +263,7 @@
      "text": "Aubergine"
     },
     {
-     "visual": "story:sheet:zeilen:salbei:NW",
+     "visual": "story:sheet:wochen:salbei:BE",
      "text": "Salbei"
     }
    ],
@@ -313,7 +313,7 @@
      "text": "Geburtstage klein am Tag, gut lesbar aus zwei Metern."
     }
    ],
-   "caption": "Ganz nah dran. Das ist die echte Druckdatei in Originalgröße, kein Foto und kein Entwurf. Wir haben jeden Tag einzeln gezählt. Es sind 364. Wir haben zweimal gezählt.\n\nDu siehst sie vor dem Bestellen genauso und gibst sie selbst frei.",
+   "caption": "Ganz nah dran. Das ist die echte Druckdatei, kein Foto und kein Entwurf. Wir haben jeden Tag einzeln gezählt. Es sind 364. Wir haben zweimal gezählt.\n\nDu siehst sie vor dem Bestellen genauso und gibst sie selbst frei.",
    "hashtags": [
     "wandplaner",
     "typografie",
