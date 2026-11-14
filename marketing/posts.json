@@ -223,6 +223,29 @@
    "note": "Auf Kommentare mit dem Bundesland antworten, das bringt Reichweite."
   },
   {
+   "id": "R02",
+   "date": "2026-11-20",
+   "time": "18:00",
+   "channel": "instagram",
+   "format": "reel",
+   "phase": "Warteliste",
+   "slides": [
+    {
+     "visual": "reel:anim:varianten",
+     "text": "Du entscheidest."
+    }
+   ],
+   "caption": "Farbe, Titel, Schrift, Layout, Ferien, Startmonat: Beim Gestalten änderst du alles selbst und siehst sofort die echte Druckdatei.\n\nEinzige Regel: Am Ende muss es an eure Wand passen. Und an euer Jahr.\n\nAb 26. November bestellbar. Warteliste: Link im Profil.",
+   "hashtags": [
+    "wandplaner",
+    "designyourown",
+    "jahresplaner",
+    "interiorinspiration"
+   ],
+   "alt": "Im Takt der Musik wechselt der Planer nacheinander Farbe, Titel, Schrift, Layout, Ferienmarkierung, Bundesland und Startmonat.",
+   "note": "Musik ist schon im Video (für uns generiert, frei nutzbar laut Higgsfield-Abo; vor bezahlter Werbung kurz prüfen). In Instagram keine zusätzliche Musik wählen."
+  },
+  {
    "id": "S03",
    "date": "2026-11-20",
    "time": "19:00",
@@ -297,6 +320,29 @@
     "jahresplaner"
    ],
    "alt": "Vier Nahaufnahmen des Planers: der Titel, ein Monatswechsel als Stufe, eine Ferienlinie und ein Geburtstag."
+  },
+  {
+   "id": "R01",
+   "date": "2026-11-22",
+   "time": "19:00",
+   "channel": "instagram",
+   "format": "reel",
+   "phase": "Warteliste",
+   "slides": [
+    {
+     "visual": "reel:anim:handschrift",
+     "text": "Der Planer lebt."
+    }
+   ],
+   "caption": "Januar: sauber gedruckt, alles ordentlich.\nOktober: Zahnarzt, Elternabend, Schwimmkurs, Oma kommt, Zahnarzt verschoben.\n\nGenau dafür ist er da. Mattes Papier, mit Bleistift und Kuli beschreibbar.",
+   "hashtags": [
+    "familienalltag",
+    "wandplaner",
+    "familienorganisation",
+    "mentalload"
+   ],
+   "alt": "Auf dem lila Planer erscheinen nach und nach handgeschriebene Termine, Kreise und kleine Zeichnungen, bis das ganze Jahr voll ist.",
+   "note": "Ruhige Musik aus der Instagram-Bibliothek dazulegen."
   },
   {
    "id": "P07",
